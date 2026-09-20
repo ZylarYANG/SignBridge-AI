@@ -1,0 +1,59 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node / frontend
+node_modules/
+dist/
+.next/
+.vite/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Model checkpoints / exported runtimes
+*.pth
+*.pt
+*.ckpt
+*.onnx
+*.engine
+
+# Raw / processed datasets (keep manifests only)
+data/raw/
+data/processed/
+data/cache/
+datasets/
+raw_data/
+raw_videos/
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# Dify runtime state
+volumes/
+docker/volumes/
+
+# Local outputs
+outputs/
+runs/
+wandb/

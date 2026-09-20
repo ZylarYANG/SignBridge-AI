@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SignBridge Analysis Result",
+  "type": "object",
+  "required": [
+    "request_id",
+    "target",
+    "recognition",
+    "evaluation",
+    "errors",
+    "quality"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string"
+    },
+    "target": {
+      "type": "string"
+    },
+    "recognition": {
+      "type": "object",
+      "required": [
+        "prediction",
+        "confidence"
+      ],
+      "properties": {
+        "prediction": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "top3": {
+          "type": "array"
+        }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "properties": {
+        "overall": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "handshape": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "trajectory": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "position": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "tempo": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "code",
+          "severity"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "required": [
+        "input_usable"
+      ],
+      "properties": {
+        "input_usable": {
+          "type": "boolean"
+        },
+        "landmark_valid_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    }
+  }
+}

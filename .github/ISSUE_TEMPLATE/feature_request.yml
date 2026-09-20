@@ -1,0 +1,25 @@
+name: Task / Feature
+description: 新功能或明确任务
+title: "[Task] "
+labels: ["task"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: 目标
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收标准
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 优先级
+      options:
+        - P0 - 阻塞主链路
+        - P1 - 本周必须
+        - P2 - 有时间再做

@@ -1,0 +1,33 @@
+name: Bug report
+description: 记录可复现问题
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: 问题描述
+    validations:
+      required: true
+  - type: input
+    id: target
+    attributes:
+      label: 目标手语/功能
+  - type: textarea
+    id: observed
+    attributes:
+      label: 实际结果
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望结果
+  - type: textarea
+    id: repro
+    attributes:
+      label: 复现步骤
+  - type: textarea
+    id: env
+    attributes:
+      label: 环境/模型版本/Commit
