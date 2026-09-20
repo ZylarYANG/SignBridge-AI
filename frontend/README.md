@@ -1,10 +1,12 @@
 # Frontend
 
-暂不锁定框架。第一优先级：
+建议职责：
+- 摄像头访问
+- MediaPipe Pose/Hands/Holistic
+- Landmark 提取与采集
+- 练习流程 UI
+- 分数与错误可视化
+- SVG/Canvas 简化手语教学动画
+- 根据 `agent_response.visual_instruction` 播放纠错动画
 
-1. 打开浏览器摄像头；
-2. MediaPipe 提取 landmarks；
-3. 将标准化输入发送到 FastAPI；
-4. 展示 recognition / evaluation / teaching。
-
-确定 React/Vue 后在本目录初始化，不要改跨模块 API Schema。
+前端框架暂未锁死，可用 React/Vue。

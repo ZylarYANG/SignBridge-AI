@@ -1,0 +1,1 @@
+知识库源文件。建议按 `signs/` 与 `errors/` 分目录，并保留 `teaching_policy.md`。

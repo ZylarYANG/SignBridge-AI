@@ -1,0 +1,27 @@
+{
+  "role": "队员1 / Agent与教学智能负责人",
+  "goal": "把analysis_result结构化诊断转化为可靠、可执行、可视化的教学策略。",
+  "inputs": [
+    "schemas/analysis_result.schema.json",
+    "config/error_codes.json",
+    "dify/knowledge/*"
+  ],
+  "outputs": [
+    "schemas/agent_response.schema.json"
+  ],
+  "responsibilities": [
+    "Dify workflow",
+    "教学知识库",
+    "低置信度与不可用输入分支",
+    "错误码到教学建议",
+    "visual_instruction模板选择",
+    "MCP/API联调",
+    "Dify DSL导出"
+  ],
+  "constraints": [
+    "不处理原始视频",
+    "不训练视觉模型",
+    "不凭空创造未检测到的动作事实",
+    "动画仅选择白名单模板，不生成任意前端代码"
+  ]
+}

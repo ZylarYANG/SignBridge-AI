@@ -1,0 +1,209 @@
+{
+  "schema_version": "1.0.0",
+  "project": "SignBridge AI / 语桥智教",
+  "language": "CSL",
+  "scope": "校赛MVP",
+  "id_policy": {
+    "sign_id_format": "CSL_<UPPER_SNAKE_CASE>",
+    "class_id_policy": "0..N-1用于已知手语；运行时UNKNOWN使用-1",
+    "note": "所有模块统一使用sign_id作为主键，中文label仅用于展示。"
+  },
+  "signs": [
+    {
+      "sign_id": "CSL_HELLO",
+      "label": "你好",
+      "class_id": 0,
+      "difficulty": "beginner",
+      "active_hands": [
+        "right_hand"
+      ],
+      "animation_id": "ANIM_CSL_HELLO",
+      "knowledge_id": "KB_CSL_HELLO",
+      "enabled": true
+    },
+    {
+      "sign_id": "CSL_THANKS",
+      "label": "谢谢",
+      "class_id": 1,
+      "difficulty": "beginner",
+      "active_hands": [
+        "right_hand"
+      ],
+      "animation_id": "ANIM_CSL_THANKS",
+      "knowledge_id": "KB_CSL_THANKS",
+      "enabled": true
+    },
+    {
+      "sign_id": "CSL_SORRY",
+      "label": "对不起",
+      "class_id": 2,
+      "difficulty": "beginner",
+      "active_hands": [
+        "right_hand"
+      ],
+      "animation_id": "ANIM_CSL_SORRY",
+      "knowledge_id": "KB_CSL_SORRY",
+      "enabled": true
+    },
+    {
+      "sign_id": "CSL_HELP",
+      "label": "帮助",
+      "class_id": 3,
+      "difficulty": "beginner",
+      "active_hands": [
+        "left_hand",
+        "right_hand"
+      ],
+      "animation_id": "ANIM_CSL_HELP",
+      "knowledge_id": "KB_CSL_HELP",
+      "enabled": true
+    },
+    {
+      "sign_id": "CSL_TEACHER",
+      "label": "老师",
+      "class_id": 4,
+      "difficulty": "beginner",
+      "active_hands": [
+        "left_hand",
+        "right_hand"
+      ],
+      "animation_id": "ANIM_CSL_TEACHER",
+      "knowledge_id": "KB_CSL_TEACHER",
+      "enabled": true
+    },
+    {
+      "sign_id": "CSL_STUDENT",
+      "label": "学生",
+      "class_id": 5,
+      "difficulty": "beginner",
+      "active_hands": [
+        "left_hand",
+        "right_hand"
+      ],
+      "animation_id": "ANIM_CSL_STUDENT",
+      "knowledge_id": "KB_CSL_STUDENT",
+      "enabled": true
+    },
+    {
+      "sign_id": "CSL_SCHOOL",
+      "label": "学校",
+      "class_id": 6,
+      "difficulty": "beginner",
+      "active_hands": [
+        "left_hand",
+        "right_hand"
+      ],
+      "animation_id": "ANIM_CSL_SCHOOL",
+      "knowledge_id": "KB_CSL_SCHOOL",
+      "enabled": true
+    },
+    {
+      "sign_id": "CSL_DOCTOR",
+      "label": "医生",
+      "class_id": 7,
+      "difficulty": "beginner",
+      "active_hands": [
+        "left_hand",
+        "right_hand"
+      ],
+      "animation_id": "ANIM_CSL_DOCTOR",
+      "knowledge_id": "KB_CSL_DOCTOR",
+      "enabled": true
+    },
+    {
+      "sign_id": "CSL_HOSPITAL",
+      "label": "医院",
+      "class_id": 8,
+      "difficulty": "beginner",
+      "active_hands": [
+        "left_hand",
+        "right_hand"
+      ],
+      "animation_id": "ANIM_CSL_HOSPITAL",
+      "knowledge_id": "KB_CSL_HOSPITAL",
+      "enabled": true
+    },
+    {
+      "sign_id": "CSL_EAT",
+      "label": "吃饭",
+      "class_id": 9,
+      "difficulty": "beginner",
+      "active_hands": [
+        "right_hand"
+      ],
+      "animation_id": "ANIM_CSL_EAT",
+      "knowledge_id": "KB_CSL_EAT",
+      "enabled": true
+    },
+    {
+      "sign_id": "CSL_DRINK",
+      "label": "喝水",
+      "class_id": 10,
+      "difficulty": "beginner",
+      "active_hands": [
+        "right_hand"
+      ],
+      "animation_id": "ANIM_CSL_DRINK",
+      "knowledge_id": "KB_CSL_DRINK",
+      "enabled": true
+    },
+    {
+      "sign_id": "CSL_FRIEND",
+      "label": "朋友",
+      "class_id": 11,
+      "difficulty": "beginner",
+      "active_hands": [
+        "left_hand",
+        "right_hand"
+      ],
+      "animation_id": "ANIM_CSL_FRIEND",
+      "knowledge_id": "KB_CSL_FRIEND",
+      "enabled": true
+    },
+    {
+      "sign_id": "CSL_HOME",
+      "label": "家",
+      "class_id": 12,
+      "difficulty": "beginner",
+      "active_hands": [
+        "left_hand",
+        "right_hand"
+      ],
+      "animation_id": "ANIM_CSL_HOME",
+      "knowledge_id": "KB_CSL_HOME",
+      "enabled": true
+    },
+    {
+      "sign_id": "CSL_GOODBYE",
+      "label": "再见",
+      "class_id": 13,
+      "difficulty": "beginner",
+      "active_hands": [
+        "right_hand"
+      ],
+      "animation_id": "ANIM_CSL_GOODBYE",
+      "knowledge_id": "KB_CSL_GOODBYE",
+      "enabled": true
+    },
+    {
+      "sign_id": "CSL_STUDY",
+      "label": "学习",
+      "class_id": 14,
+      "difficulty": "beginner",
+      "active_hands": [
+        "left_hand",
+        "right_hand"
+      ],
+      "animation_id": "ANIM_CSL_STUDY",
+      "knowledge_id": "KB_CSL_STUDY",
+      "enabled": true
+    }
+  ],
+  "runtime_special_labels": {
+    "unknown": {
+      "sign_id": "UNKNOWN",
+      "label": "未知/其他",
+      "class_id": -1
+    }
+  }
+}

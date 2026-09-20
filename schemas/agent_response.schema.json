@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://signbridge.local/schemas/agent_response.schema.json",
+  "title": "SignBridge Agent Response",
+  "description": "Dify Agent输出给Web的教学反馈、学习决策和视觉动画控制指令。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_id",
+    "status",
+    "feedback",
+    "learning_decision",
+    "visual_instruction"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "retry_capture",
+        "low_confidence",
+        "wrong_sign",
+        "system_error"
+      ]
+    },
+    "feedback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "summary",
+        "main_issue",
+        "suggestions"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string"
+        },
+        "main_issue": {
+          "type": "string"
+        },
+        "suggestions": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 3,
+          "items": {
+            "type": "string"
+          }
+        },
+        "encouragement": {
+          "type": "string"
+        },
+        "kb_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "learning_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action"
+      ],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "retry",
+            "continue",
+            "relearn",
+            "recapture",
+            "stop"
+          ]
+        },
+        "focus_dimension": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "handshape",
+            "trajectory",
+            "position",
+            "tempo",
+            "amplitude",
+            null
+          ]
+        },
+        "focus_body_part": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "left_hand",
+            "right_hand",
+            "both_hands",
+            "global",
+            "active_hand",
+            null
+          ]
+        },
+        "priority_error_code": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "visual_instruction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "actions"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "teaching",
+            "correction",
+            "comparison",
+            "none"
+          ]
+        },
+        "focus_part": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "left_hand",
+            "right_hand",
+            "both_hands",
+            "head",
+            "upper_body",
+            "global",
+            null
+          ]
+        },
+        "highlight_phase": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "preparation",
+            "start",
+            "main_motion",
+            "end",
+            "global",
+            null
+          ]
+        },
+        "actions": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "template"
+            ],
+            "properties": {
+              "template": {
+                "type": "string",
+                "pattern": "^[A-Z0-9_]+$"
+              },
+              "target": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "amount": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "small",
+                  "medium",
+                  "large",
+                  null
+                ]
+              },
+              "speed": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "slow",
+                  "normal",
+                  "fast",
+                  null
+                ]
+              },
+              "repeat": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 3
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

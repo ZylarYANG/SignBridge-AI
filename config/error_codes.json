@@ -1,0 +1,165 @@
+{
+  "schema_version": "1.0.0",
+  "project": "SignBridge AI / 语桥智教",
+  "principles": [
+    "错误码由诊断层产生，Agent不得凭空创造未检测到的视觉错误。",
+    "Agent根据severity与教学策略选择1-3个优先错误。",
+    "动画模板只接收白名单模板ID，不允许LLM自由生成任意前端代码。"
+  ],
+  "errors": {
+    "RIGHT_HAND_PATH_TOO_LOW": {
+      "dimension": "trajectory",
+      "body_part": "right_hand",
+      "meaning": "右手在主要运动阶段的垂直位置低于标准轨迹。",
+      "default_phase": "main_motion",
+      "animation_template": "FIX_HAND_RAISE",
+      "comparison_templates": [
+        "SHOW_USER_TRAJECTORY",
+        "SHOW_STANDARD_TRAJECTORY"
+      ],
+      "teaching_intent": "提示用户抬高右手运动路径。"
+    },
+    "RIGHT_HAND_PATH_TOO_HIGH": {
+      "dimension": "trajectory",
+      "body_part": "right_hand",
+      "meaning": "右手在主要运动阶段的垂直位置高于标准轨迹。",
+      "default_phase": "main_motion",
+      "animation_template": "FIX_HAND_LOWER",
+      "comparison_templates": [
+        "SHOW_USER_TRAJECTORY",
+        "SHOW_STANDARD_TRAJECTORY"
+      ],
+      "teaching_intent": "提示用户降低右手运动路径。"
+    },
+    "LEFT_HAND_PATH_TOO_LOW": {
+      "dimension": "trajectory",
+      "body_part": "left_hand",
+      "meaning": "左手在主要运动阶段的垂直位置低于标准轨迹。",
+      "default_phase": "main_motion",
+      "animation_template": "FIX_HAND_RAISE",
+      "comparison_templates": [
+        "SHOW_USER_TRAJECTORY",
+        "SHOW_STANDARD_TRAJECTORY"
+      ],
+      "teaching_intent": "提示用户抬高左手运动路径。"
+    },
+    "LEFT_HAND_PATH_TOO_HIGH": {
+      "dimension": "trajectory",
+      "body_part": "left_hand",
+      "meaning": "左手在主要运动阶段的垂直位置高于标准轨迹。",
+      "default_phase": "main_motion",
+      "animation_template": "FIX_HAND_LOWER",
+      "comparison_templates": [
+        "SHOW_USER_TRAJECTORY",
+        "SHOW_STANDARD_TRAJECTORY"
+      ],
+      "teaching_intent": "提示用户降低左手运动路径。"
+    },
+    "START_POSITION_OFFSET": {
+      "dimension": "position",
+      "body_part": "active_hand",
+      "meaning": "动作起始位置与标准动作存在明显偏移。",
+      "default_phase": "start",
+      "animation_template": "FIX_START_POSITION",
+      "comparison_templates": [
+        "SHOW_START_POSITION_COMPARE"
+      ],
+      "teaching_intent": "先修正起始姿势，再进入主动作。"
+    },
+    "END_POSITION_OFFSET": {
+      "dimension": "position",
+      "body_part": "active_hand",
+      "meaning": "动作结束位置与标准动作存在明显偏移。",
+      "default_phase": "end",
+      "animation_template": "FIX_END_POSITION",
+      "comparison_templates": [
+        "SHOW_END_POSITION_COMPARE"
+      ],
+      "teaching_intent": "强调动作结束位置。"
+    },
+    "MOTION_RANGE_TOO_SMALL": {
+      "dimension": "amplitude",
+      "body_part": "active_hand",
+      "meaning": "动作幅度明显小于标准动作。",
+      "default_phase": "main_motion",
+      "animation_template": "FIX_INCREASE_RANGE",
+      "comparison_templates": [
+        "SHOW_RANGE_COMPARE"
+      ],
+      "teaching_intent": "提示用户扩大动作范围。"
+    },
+    "MOTION_RANGE_TOO_LARGE": {
+      "dimension": "amplitude",
+      "body_part": "active_hand",
+      "meaning": "动作幅度明显大于标准动作。",
+      "default_phase": "main_motion",
+      "animation_template": "FIX_DECREASE_RANGE",
+      "comparison_templates": [
+        "SHOW_RANGE_COMPARE"
+      ],
+      "teaching_intent": "提示用户收小动作范围。"
+    },
+    "MOTION_TOO_FAST": {
+      "dimension": "tempo",
+      "body_part": "global",
+      "meaning": "整体动作速度明显快于标准动作。",
+      "default_phase": "global",
+      "animation_template": "FIX_SLOW_DOWN",
+      "comparison_templates": [
+        "SHOW_TEMPO_COMPARE"
+      ],
+      "teaching_intent": "提示用户减慢动作节奏。"
+    },
+    "MOTION_TOO_SLOW": {
+      "dimension": "tempo",
+      "body_part": "global",
+      "meaning": "整体动作速度明显慢于标准动作。",
+      "default_phase": "global",
+      "animation_template": "FIX_SPEED_UP",
+      "comparison_templates": [
+        "SHOW_TEMPO_COMPARE"
+      ],
+      "teaching_intent": "提示用户加快动作节奏。"
+    },
+    "HANDSHAPE_NOT_MATCHED": {
+      "dimension": "handshape",
+      "body_part": "active_hand",
+      "meaning": "关键手型与标准动作不匹配。",
+      "default_phase": "global",
+      "animation_template": "FIX_HANDSHAPE",
+      "comparison_templates": [
+        "SHOW_HANDSHAPE_COMPARE"
+      ],
+      "teaching_intent": "展示标准手型并高亮需调整的手部。"
+    },
+    "LOW_LANDMARK_QUALITY": {
+      "dimension": "quality",
+      "body_part": "global",
+      "meaning": "关键点有效率过低，当前动作不适合评分。",
+      "default_phase": "global",
+      "animation_template": "RECOVER_CAPTURE_POSE",
+      "comparison_templates": [],
+      "teaching_intent": "提示用户确保双手入镜、光线充足并重新采集。"
+    }
+  },
+  "animation_templates_whitelist": [
+    "SHOW_USER_TRAJECTORY",
+    "SHOW_STANDARD_TRAJECTORY",
+    "SHOW_START_POSITION_COMPARE",
+    "SHOW_END_POSITION_COMPARE",
+    "SHOW_RANGE_COMPARE",
+    "SHOW_TEMPO_COMPARE",
+    "SHOW_HANDSHAPE_COMPARE",
+    "FIX_HAND_RAISE",
+    "FIX_HAND_LOWER",
+    "FIX_START_POSITION",
+    "FIX_END_POSITION",
+    "FIX_INCREASE_RANGE",
+    "FIX_DECREASE_RANGE",
+    "FIX_SLOW_DOWN",
+    "FIX_SPEED_UP",
+    "FIX_HANDSHAPE",
+    "PLAY_CORRECTED_MOTION",
+    "RECOVER_CAPTURE_POSE"
+  ]
+}

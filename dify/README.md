@@ -1,13 +1,11 @@
 # Dify
 
-队员1负责。
+- `workflow/`：队员1导出的 Dify DSL，例如 `sign_teacher.yml`
+- `knowledge/`：原始知识库 Markdown
+- `mock_inputs/`：联调假数据
 
-## 必须版本化的资产
-
-- `workflow/`：每次重要修改后导出的 DSL YAML
-- `knowledge/`：知识库原始 Markdown/TXT 源文件
-- `mock_inputs/`：与后端接口一致的 Mock JSON
-
-不要提交 Dify Docker volumes，也不要提交 Provider/API 密钥。
-
-迁移原则：新机器安装同版本 Dify -> Import DSL -> 重新导入知识库源文件 -> 配置 Provider/API Key。
+迁移原则：
+1. Workflow 通过 DSL 导入目标 Dify；
+2. Knowledge 原始 Markdown 保存在 Git 中，迁移时重新索引；
+3. API Key 不提交仓库；
+4. Dify 只消费结构化诊断，不直接判断原始视频。

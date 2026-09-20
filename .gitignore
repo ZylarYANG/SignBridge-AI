@@ -1,9 +1,7 @@
-# Secrets
+# secrets
 .env
 .env.*
 !.env.example
-*.pem
-*.key
 
 # Python
 __pycache__/
@@ -12,35 +10,19 @@ __pycache__/
 venv/
 .pytest_cache/
 .mypy_cache/
-.ruff_cache/
 
-# Node / frontend
+# Node
 node_modules/
 dist/
-.next/
-.vite/
+build/
 
-# IDE / OS
+# IDE
 .vscode/
 .idea/
-.DS_Store
-Thumbs.db
 
-# Logs
-logs/
-*.log
-
-# Model checkpoints / exported runtimes
-*.pth
-*.pt
-*.ckpt
-*.onnx
-*.engine
-
-# Raw / processed datasets (keep manifests only)
-data/raw/
-data/processed/
-data/cache/
+# datasets and videos
+data/
+dataset/
 datasets/
 raw_data/
 raw_videos/
@@ -49,11 +31,24 @@ raw_videos/
 *.mov
 *.mkv
 
-# Dify runtime state
-volumes/
-docker/volumes/
+# model weights
+models/checkpoints/*
+!models/checkpoints/.gitkeep
+*.pth
+*.pt
+*.ckpt
+*.onnx
 
-# Local outputs
-outputs/
-runs/
-wandb/
+# logs/temp
+logs/
+*.log
+tmp/
+temp/
+
+# Dify runtime / docker volumes
+dify/docker/volumes/
+volumes/
+
+# OS
+.DS_Store
+Thumbs.db

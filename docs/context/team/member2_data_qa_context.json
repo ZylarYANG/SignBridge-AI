@@ -1,0 +1,18 @@
+{
+  "role": "队员2 / 数据、测试与交付负责人",
+  "goal": "保证数据可用、跨用户测试可信、系统现场稳定，并形成比赛材料。",
+  "responsibilities": [
+    "组织6-10人数据采集",
+    "按signer划分train/val/test",
+    "UNKNOWN/OTHER采集",
+    "样本质检与manifest维护",
+    "跨用户与环境测试",
+    "Bug记录",
+    "标准动作资料整理",
+    "PPT、演示视频、实验图表"
+  ],
+  "constraints": [
+    "禁止按视频随机拆分导致signer leakage",
+    "比赛材料中的数据必须可追溯"
+  ]
+}

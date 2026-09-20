@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://signbridge.local/schemas/animation_script.schema.json",
+  "title": "SignBridge Animation Script",
+  "description": "前端简化手语动画引擎协议；标准动作由预制脚本驱动，Agent主要选择模板与播放策略。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "animation_id",
+    "sign_id",
+    "mode",
+    "duration_sec",
+    "view",
+    "phases"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "animation_id": {
+      "type": "string",
+      "pattern": "^ANIM_[A-Z0-9_]+$"
+    },
+    "sign_id": {
+      "type": "string",
+      "pattern": "^CSL_[A-Z0-9_]+$"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "teaching",
+        "correction",
+        "comparison"
+      ]
+    },
+    "duration_sec": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "view": {
+      "type": "string",
+      "enum": [
+        "front",
+        "mirror_front"
+      ]
+    },
+    "loop": {
+      "type": "boolean"
+    },
+    "default_speed": {
+      "type": "number",
+      "minimum": 0.25,
+      "maximum": 2.0
+    },
+    "phases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/phase"
+      }
+    },
+    "overlays": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/overlay"
+      }
+    }
+  },
+  "$defs": {
+    "point2d": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "items": false
+    },
+    "handState": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "$ref": "#/$defs/point2d"
+        },
+        "handshape": {
+          "type": "string",
+          "enum": [
+            "OPEN_PALM",
+            "CLOSED_FIST",
+            "POINT_INDEX",
+            "FLAT_HAND",
+            "CURVED_HAND",
+            "NEUTRAL"
+          ]
+        },
+        "trajectory": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/point2d"
+          }
+        },
+        "visible": {
+          "type": "boolean"
+        }
+      }
+    },
+    "phase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "time"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "preparation",
+            "start",
+            "main_motion",
+            "end"
+          ]
+        },
+        "time": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "start",
+            "end"
+          ],
+          "properties": {
+            "start": {
+              "type": "number",
+              "minimum": 0
+            },
+            "end": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        },
+        "left_hand": {
+          "$ref": "#/$defs/handState"
+        },
+        "right_hand": {
+          "$ref": "#/$defs/handState"
+        },
+        "body": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "lean_x": {
+              "type": "number"
+            },
+            "lean_y": {
+              "type": "number"
+            },
+            "highlight": {
+              "type": "boolean"
+            }
+          }
+        },
+        "hint": {
+          "type": "string"
+        }
+      }
+    },
+    "overlay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "trajectory",
+            "arrow",
+            "highlight",
+            "label",
+            "ghost_pose"
+          ]
+        },
+        "target": {
+          "type": "string"
+        },
+        "phase": {
+          "type": "string"
+        },
+        "style_token": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

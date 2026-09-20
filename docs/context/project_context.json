@@ -1,0 +1,42 @@
+{
+  "project_name": "SignBridge AI / 语桥智教",
+  "competition": "AIC比赛",
+  "recommended_track": "AI+软件创新",
+  "stage": "校赛",
+  "time_remaining": "约1周多",
+  "team_size": 3,
+  "positioning": "一个能够看懂用户手语、判断动作是否规范、指出具体错误并用可视化动画给出个性化教学反馈的Web端AI中国手语教学系统。",
+  "core_pipeline": [
+    "Browser Camera",
+    "MediaPipe Pose+Hands",
+    "Pose/Skeleton Recognition",
+    "Motion Assessment",
+    "FastAPI",
+    "Dify Agent",
+    "Visual Instruction",
+    "Web Animation Engine"
+  ],
+  "team": {
+    "leader": "Web、MediaPipe、识别模型、评分、FastAPI、动画引擎、系统集成",
+    "member1": "Dify Agent、知识库、教学决策、MCP/API协同",
+    "member2": "数据采集与质检、UNKNOWN、跨用户测试、PPT/演示材料"
+  },
+  "current_model_strategy": {
+    "main_candidate": "Siformer",
+    "baseline": "SPOTER或Bi-LSTM",
+    "input": "左手21 + 右手21 + 上半身约12 landmarks，时序输入",
+    "scope": "10-15个CSL孤立词 + UNKNOWN"
+  },
+  "teaching_strategy": {
+    "assessment": "Normalization + DTW + Geometry",
+    "agent_boundary": "Agent不判断视觉事实，只根据结构化诊断进行教学决策",
+    "visual_feedback": "无声音交互；以高对比度动效、轨迹、箭头、简化手语动画作为主要反馈"
+  },
+  "engineering_principles": [
+    "Day1优先跑通Camera→Landmarks→Backend最小闭环",
+    "Day6前跑通识别→评分→Agent→动画闭环",
+    "Day7起冻结大功能",
+    "接口优先稳定，内部模型可替换",
+    "API Key、原始视频、模型大权重不提交GitHub"
+  ]
+}

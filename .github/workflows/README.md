@@ -1,0 +1,1 @@
+后续可加入 JSON Schema 校验、Python tests、frontend build 等 CI。

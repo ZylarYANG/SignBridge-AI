@@ -2,27 +2,27 @@
 
 ```text
 Browser Camera
-    ↓
+   ↓
 MediaPipe Pose + Hands
-    ↓
-Landmark Sequence
-    ↓
-FastAPI Backend
-    ├── Recognition Service (Siformer / SPOTER baseline)
-    ├── Motion Assessment (Normalization + DTW + Geometry)
-    └── Dify Client
-             ↓
-        Dify Workflow / Knowledge Base
-             ↓
-        Teaching Feedback
-    ↓
-Web UI
+   ↓
+Pose Sequence
+   ↓
+Recognition Engine (Siformer / baseline)
+   ↓
+Assessment Engine (DTW + Geometry)
+   ↓
+analysis_result
+   ↓
+Dify Agent + Knowledge Base
+   ↓
+agent_response
+   ↓
+Web Animation Engine
 ```
 
-## 原则
+## 职责边界
 
-- 浏览器优先提取 landmarks，减少原始视频上传。
-- Dify 不直接承担视觉识别。
-- FastAPI 负责模型推理、评分、接口编排。
-- MCP 是可选工具适配层，不阻塞 MVP。
-- 跨模块通过稳定 JSON Schema 解耦。
+- Recognition：回答“用户做的是什么”
+- Assessment：回答“哪里不标准、何时发生、严重度”
+- Agent：回答“应该先教什么、怎么解释、播放哪些教学动画”
+- Animation：执行白名单模板与标准动作脚本

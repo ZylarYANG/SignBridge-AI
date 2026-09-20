@@ -1,12 +1,9 @@
-# Model Checkpoints
+# Models
 
-不直接提交 `.pth/.pt/.ckpt/.onnx`。
+GitHub 不直接保存大权重。
 
-每个最终模型请记录：
+- `checkpoints/`：本地模型权重位置，默认被 `.gitignore`
+- `registry/`：模型元数据、数据版本、实验指标
 
-- checkpoint 文件名
-- 对应 Git commit
-- dataset version
-- training config
-- metrics
-- 外部存储位置（团队内部记录）
+建议权重命名：
+`siformer_csl_v01.pth`

@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_version": "CSL_MVP_V1",
+  "samples": [
+    {
+      "sample_id": "S03_THANKS_017",
+      "signer_id": "S03",
+      "sign_id": "CSL_THANKS",
+      "take_id": 17,
+      "split": "train",
+      "valid": true,
+      "quality_note": ""
+    }
+  ]
+}
