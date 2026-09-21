@@ -14,6 +14,14 @@ import {
   canonicalizeFrame,
 } from "../services/landmarkProcessor";
 
+import type {
+  LandmarkFrame,
+} from "../types/landmark";
+
+import {
+  prepareSequence,
+} from "../services/sequenceProcessor";
+
 type CameraStatus =
   | "initializing"
   | "ready"
@@ -25,6 +33,16 @@ type VisionStatus =
   | "loading"
   | "ready"
   | "error";
+
+type CaptureStatus =
+  | "idle"
+  | "countdown"
+  | "capturing"
+  | "done";
+
+const COUNTDOWN_MS = 1000;
+
+const CAPTURE_DURATION_MS = 2000;
 
 const BODY_INDICES = [
   0,   // nose
@@ -251,6 +269,12 @@ export function CameraView() {
   const lastVideoTimeRef =
     useRef<number>(-1);
 
+  const isCapturingRef =
+    useRef(false);
+
+  const capturedFramesRef =
+    useRef<LandmarkFrame[]>([]);
+
   const [cameraStatus, setCameraStatus] =
     useState<CameraStatus>("initializing");
 
@@ -275,6 +299,26 @@ export function CameraView() {
     canonicalValidRatio,
     setCanonicalValidRatio,
   ] = useState(0);
+
+  const [
+    captureStatus,
+    setCaptureStatus,
+  ] =
+    useState<CaptureStatus>(
+      "idle"
+    );
+
+  const [
+    capturedFrameCount,
+    setCapturedFrameCount,
+  ] =
+    useState(0);
+
+  const [
+    lastCaptureDuration,
+    setLastCaptureDuration,
+  ] =
+    useState(0);
 
   const [handedness, setHandedness] =
     useState<string[]>([]);
@@ -473,6 +517,18 @@ export function CameraView() {
               canonical.validRatio
             );
 
+            if (
+              isCapturingRef.current
+            ) {
+              capturedFramesRef.current.push(
+                canonical.frame
+              );
+
+              setCapturedFrameCount(
+                capturedFramesRef.current.length
+              );
+            }
+
           } catch (error) {
             console.error(
               "MediaPipe frame detection failed:",
@@ -507,6 +563,204 @@ export function CameraView() {
     };
   }, [cameraStatus]);
 
+  function startCapture() {
+    if (
+      cameraStatus !== "ready" ||
+      visionStatus !== "ready"
+    ) {
+     return;
+    }
+
+    if (
+      captureStatus ===
+       "countdown" ||
+      captureStatus ===
+        "capturing"
+   ) {
+      return;
+    }
+
+    /*
+    * 清空上一次动作
+    */
+    capturedFramesRef.current = [];
+
+    setCapturedFrameCount(0);
+
+    setLastCaptureDuration(0);
+
+    isCapturingRef.current =
+      false;
+
+    /*
+    * 进入倒计时
+    */
+    setCaptureStatus(
+      "countdown"
+    );
+
+    window.setTimeout(
+      () => {
+        /*
+        * 正式开始采集
+        */
+        capturedFramesRef.current = [];
+
+        setCapturedFrameCount(0);
+
+        const captureStartTime =
+          performance.now();
+
+        isCapturingRef.current =
+          true;
+
+        setCaptureStatus(
+          "capturing"
+        );
+
+        window.setTimeout(
+          () => {
+            /*
+            * 结束采集
+            */
+            isCapturingRef.current =
+              false;
+
+            const captureEndTime =
+              performance.now();
+
+            const duration =
+              (
+                captureEndTime -
+                captureStartTime
+              ) /
+              1000;
+
+            setLastCaptureDuration(
+              duration
+            );
+
+            setCaptureStatus(
+              "done"
+            );
+
+            const frames =
+              capturedFramesRef.current;
+
+            console.log(
+              "===== SignBridge Raw Capture ====="
+            );
+
+            console.log(
+              "Frames:",
+              frames.length
+            );
+
+            console.log(
+              "Canonical shape:",
+              `[${frames.length}, 54, 2]`
+            );
+
+            console.log(
+              "Duration:",
+              duration.toFixed(3),
+              "seconds"
+            );
+
+            console.log(
+              "Raw sequence:",
+              frames
+            );
+
+            const processed =
+              prepareSequence(
+                frames
+              );
+
+            console.log(
+              "===== SignBridge Preprocessing ====="
+            );
+
+            console.log(
+              "Normalized frames:",
+              processed
+                .normalizedFrames
+                .length
+            );
+
+            console.log(
+              "Resampled frames:",
+              processed
+                .resampledFrames
+                .length
+            );
+
+            console.log(
+              "Model shape:",
+              `[${processed.modelInput.length}, ${
+                processed.modelInput[0]?.length
+              }, ${
+                processed.modelInput[0]?.[0]?.length
+              }]`
+            );
+
+            console.log(
+              "Model input:",
+              processed.modelInput
+            );
+
+            console.log(
+              "Normalized first frame:",
+              processed
+                .normalizedFrames[0]
+            );
+
+            const firstNormalizedFrame =
+              processed
+                .normalizedFrames[0];
+
+            const leftShoulder =
+              firstNormalizedFrame
+                .landmarks[45];
+
+            const rightShoulder =
+              firstNormalizedFrame
+                .landmarks[46];
+
+            const shoulderCenter =
+              firstNormalizedFrame
+                .landmarks[53];
+
+            const shoulderDistance =
+              Math.sqrt(
+                (
+                  rightShoulder.x -
+                  leftShoulder.x
+                ) ** 2 +
+                (
+                  rightShoulder.y -
+                  leftShoulder.y
+                ) ** 2
+              );
+
+            console.log(
+              "Shoulder center:",
+              shoulderCenter
+            );
+
+            console.log(
+              "Normalized shoulder distance:",
+              shoulderDistance
+            );
+
+          },
+          CAPTURE_DURATION_MS
+        );
+      },
+      COUNTDOWN_MS
+    );
+  }
+
   const cameraLabel =
     cameraStatus === "initializing"
       ? "正在初始化"
@@ -525,6 +779,17 @@ export function CameraView() {
         : visionStatus === "ready"
           ? "MediaPipe 已就绪"
           : "MediaPipe 异常";
+
+  const captureLabel =
+    captureStatus === "idle"
+      ? "准备练习"
+      : captureStatus ===
+          "countdown"
+        ? "1 秒后开始"
+        : captureStatus ===
+            "capturing"
+          ? "正在采集"
+          : "采集完成";
 
   return (
     <section className="camera-panel">
@@ -563,6 +828,26 @@ export function CameraView() {
           ref={canvasRef}
           className="landmark-canvas"
         />
+
+        {captureStatus ===
+          "countdown" && (
+          <div className="capture-overlay">
+            1
+          </div>
+        )}
+
+        {captureStatus ===
+          "capturing" && (
+          <div
+            className="
+              capture-overlay
+              capture-overlay-recording
+            "
+          >
+            ● REC
+          </div>
+        )}
+
       </div>
 
       <div className="vision-metrics">
@@ -607,6 +892,62 @@ export function CameraView() {
           </strong>
         </div>
 
+      </div>
+
+      <div className="capture-controls">
+        <div>
+          <span className="capture-label">
+            Capture
+          </span>
+
+          <strong>
+            {captureLabel}
+          </strong>
+        </div>
+
+        <div>
+          <span className="capture-label">
+            Frames
+          </span>
+
+          <strong>
+            {capturedFrameCount}
+          </strong>
+        </div>
+
+        <div>
+          <span className="capture-label">
+            Duration
+          </span>
+
+          <strong>
+            {lastCaptureDuration >
+            0
+              ?
+                `${lastCaptureDuration.toFixed(
+                  2
+                )} s`
+              : "—"}
+          </strong>
+        </div>
+
+        <button
+          className="primary-button"
+          onClick={startCapture}
+          disabled={
+            visionStatus !==
+              "ready" ||
+            captureStatus ===
+              "countdown" ||
+            captureStatus ===
+              "capturing"
+          }
+        >
+          {captureStatus ===
+            "capturing"
+            ? "正在采集..."
+            : "开始练习"}
+        </button>
       </div>
 
       {errorMessage && (
