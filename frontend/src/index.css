@@ -1,0 +1,269 @@
+﻿:root {
+  font-family:
+    Inter,
+    "Segoe UI",
+    "Microsoft YaHei",
+    sans-serif;
+
+  color: #172033;
+  background: #f5f7fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  width: min(1400px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 36px 0 64px;
+}
+
+.app-header {
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #52616f;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: clamp(30px, 4vw, 48px);
+}
+
+.app-header p {
+  margin: 10px 0 0;
+  color: #637083;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.camera-panel,
+.practice-panel {
+  background: white;
+  border: 1px solid #e4e8ef;
+  border-radius: 22px;
+  box-shadow: 0 16px 42px rgba(25, 35, 55, 0.08);
+}
+
+.camera-panel {
+  padding: 20px;
+}
+
+.camera-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.camera-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.camera-header p {
+  margin: 6px 0 0;
+  color: #697689;
+}
+
+.status {
+  flex: none;
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  background: #edf0f4;
+}
+
+.status-ready {
+  background: #e8f7ee;
+}
+
+.status-permission-denied,
+.status-error {
+  background: #fdecec;
+}
+
+.video-shell {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border-radius: 18px;
+  background: #111827;
+}
+
+.camera-video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+
+  /*
+   * 仅镜像显示。
+   * 后续 MediaPipe 数据不要因此交换左右手语义。
+   */
+  transform: scaleX(-1);
+}
+
+.camera-guide {
+  pointer-events: none;
+  position: absolute;
+  inset: 8% 22%;
+  opacity: 0.25;
+}
+
+.guide-head {
+  width: 18%;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border: 2px dashed white;
+  border-radius: 50%;
+}
+
+.guide-body {
+  width: 70%;
+  height: 72%;
+  margin: 3% auto 0;
+  border: 2px dashed white;
+  border-radius: 45% 45% 24% 24%;
+}
+
+.practice-panel {
+  padding: 24px;
+}
+
+.panel-label {
+  font-size: 13px;
+  color: #788599;
+}
+
+.practice-panel h2 {
+  margin: 8px 0 2px;
+  font-size: 34px;
+}
+
+.practice-panel code {
+  color: #637083;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 14px 0;
+  border-top: 1px solid #edf0f4;
+}
+
+.metric span {
+  color: #778397;
+}
+
+.practice-panel button {
+  width: 100%;
+  margin-top: 24px;
+  border: 0;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.hint,
+.error-message {
+  margin: 16px 0 0;
+  line-height: 1.6;
+  color: #697689;
+}
+
+.error-message {
+  color: #a72f2f;
+}
+
+@media (max-width: 850px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell {
+    width: min(100% - 24px, 1400px);
+    padding-top: 20px;
+  }
+}
+
+.status-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.landmark-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+
+  /*
+   * video 本身做了镜像显示，
+   * canvas 同样镜像，
+   * 因而关键点与人物视觉上保持重合。
+   */
+  transform: scaleX(-1);
+}
+
+.vision-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.vision-metric {
+  padding: 12px 14px;
+  border: 1px solid #edf0f4;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.vision-metric span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #7b8797;
+}
+
+.vision-metric strong {
+  font-size: 14px;
+}
+
+@media (max-width: 650px) {
+  .vision-metrics {
+    grid-template-columns: 1fr;
+  }
+}
