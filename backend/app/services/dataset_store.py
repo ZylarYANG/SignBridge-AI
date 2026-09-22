@@ -1,14 +1,32 @@
-import json
+﻿import json
 from pathlib import Path
 
-from app.models.dataset import DatasetSampleRequest
+from app.models.dataset import (
+    DatasetSampleRequest,
+)
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
+PROJECT_ROOT = (
+    Path(__file__)
+    .resolve()
+    .parents[3]
+)
 
-DATA_ROOT = PROJECT_ROOT / "data"
-RAW_SAMPLE_DIR = DATA_ROOT / "raw" / "samples"
-MANIFEST_DIR = DATA_ROOT / "manifests"
+DATA_ROOT = (
+    PROJECT_ROOT
+    / "data"
+)
+
+RAW_SAMPLE_DIR = (
+    DATA_ROOT
+    / "raw"
+    / "samples"
+)
+
+MANIFEST_DIR = (
+    DATA_ROOT
+    / "manifests"
+)
 
 MANIFEST_PATH = (
     MANIFEST_DIR
@@ -16,7 +34,8 @@ MANIFEST_PATH = (
 )
 
 
-def ensure_dataset_directories() -> None:
+def ensure_dataset_directories(
+) -> None:
     RAW_SAMPLE_DIR.mkdir(
         parents=True,
         exist_ok=True,
@@ -29,15 +48,12 @@ def ensure_dataset_directories() -> None:
 
 
 def save_dataset_sample(
-    sample: DatasetSampleRequest,
-) -> tuple[Path, bool]:
-    """
-    保存完整样本 JSON，并向 JSONL manifest
-    追加一条索引记录。
-
-    不允许同 sample_id 覆盖已有数据。
-    """
-
+    sample:
+        DatasetSampleRequest,
+) -> tuple[
+    Path,
+    bool,
+]:
     ensure_dataset_directories()
 
     sample_path = (
@@ -47,7 +63,7 @@ def save_dataset_sample(
 
     if sample_path.exists():
         raise FileExistsError(
-            f"Sample already exists: "
+            "Sample already exists: "
             f"{sample.sample_id}"
         )
 
@@ -67,6 +83,7 @@ def save_dataset_sample(
             ensure_ascii=False,
             indent=2,
         )
+
 
     manifest_record = {
         "schema_version":
@@ -88,22 +105,49 @@ def save_dataset_sample(
             sample.label,
 
         "raw_frame_count":
-            sample.capture.raw_frame_count,
+            sample.capture
+            .raw_frame_count,
 
         "duration_ms":
-            sample.capture.duration_ms,
+            sample.capture
+            .duration_ms,
 
         "input_usable":
-            sample.quality.input_usable,
+            sample.quality
+            .input_usable,
 
         "landmark_valid_ratio":
-            sample.quality.landmark_valid_ratio,
+            sample.quality
+            .landmark_valid_ratio,
+
+        "shoulder_usable_ratio":
+            sample.quality
+            .shoulder_usable_ratio,
+
+        "left_hand_usable_ratio":
+            sample.quality
+            .left_hand_usable_ratio,
+
+        "right_hand_usable_ratio":
+            sample.quality
+            .right_hand_usable_ratio,
+
+        "both_hands_usable_ratio":
+            sample.quality
+            .both_hands_usable_ratio,
+
+        "active_hand":
+            sample.quality
+            .active_hand,
 
         "sample_path":
-            sample_path.relative_to(
+            sample_path
+            .relative_to(
                 PROJECT_ROOT
-            ).as_posix(),
+            )
+            .as_posix(),
     }
+
 
     with MANIFEST_PATH.open(
         "a",
@@ -117,4 +161,7 @@ def save_dataset_sample(
             + "\n"
         )
 
-    return sample_path, True
+    return (
+        sample_path,
+        True,
+    )
