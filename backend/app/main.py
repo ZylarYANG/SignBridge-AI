@@ -3,6 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes.practice import router as practice_router
 
+from app.api.routes.dataset import (
+    router as dataset_router,
+)
+
+
 
 app = FastAPI(
     title="SignBridge AI Backend",
@@ -22,8 +27,13 @@ app.add_middleware(
 )
 
 
-app.include_router(practice_router)
+app.include_router(
+    practice_router
+)
 
+app.include_router(
+    dataset_router
+)
 
 @app.get("/health")
 async def health():
