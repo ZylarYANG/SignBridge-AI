@@ -22,6 +22,11 @@ import {
   prepareSequence,
 } from "../services/sequenceProcessor";
 
+import {
+  submitPractice,
+  type PracticeResponse,
+} from "../services/api";
+
 type CameraStatus =
   | "initializing"
   | "ready"
@@ -322,6 +327,20 @@ export function CameraView() {
 
   const [handedness, setHandedness] =
     useState<string[]>([]);
+
+  const [
+    apiResult,
+    setApiResult,
+  ] =
+    useState<PracticeResponse | null>(
+      null
+    );
+
+  const [
+    apiError,
+    setApiError,
+  ] =
+    useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -715,6 +734,55 @@ export function CameraView() {
                 .normalizedFrames[0]
             );
 
+            setApiResult(null);
+            setApiError("");
+
+            const requestId =
+              `practice_${Date.now()}`;
+
+            void submitPractice({
+              request_id:
+                requestId,
+
+              target_sign_id:
+                "CSL_THANKS",
+
+              raw_frame_count:
+                frames.length,
+
+              sequence_length:
+                processed.modelInput.length,
+
+              landmarks:
+                processed.modelInput,
+            })
+              .then((response) => {
+                console.log(
+                  "===== SignBridge API ====="
+                );
+
+                console.log(
+                  "Practice response:",
+                  response
+                );
+
+                setApiResult(
+                  response
+                );
+              })
+              .catch((error) => {
+                console.error(
+                  "Practice API error:",
+                  error
+                );
+
+                setApiError(
+                  error instanceof Error
+                    ? error.message
+                    : "FastAPI request failed."
+                );
+              });
+
             const firstNormalizedFrame =
               processed
                 .normalizedFrames[0];
@@ -949,6 +1017,48 @@ export function CameraView() {
             : "开始练习"}
         </button>
       </div>
+
+      {apiResult && (
+        <div className="api-result">
+          <strong>
+            FastAPI 接收成功
+          </strong>
+
+          <p>
+            Status：
+            {apiResult.status}
+          </p>
+
+          <p>
+            Mode：
+            {apiResult.mode}
+          </p>
+
+          <p>
+            Request：
+            {apiResult.request_id}
+          </p>
+
+          <p>
+            Shape：
+            {apiResult.received_shape.join(
+              " × "
+            )}
+          </p>
+        </div>
+      )}
+
+      {apiError && (
+        <div className="api-error">
+          <strong>
+            FastAPI 请求失败
+          </strong>
+
+          <p>
+            {apiError}
+          </p>
+        </div>
+      )}
 
       {errorMessage && (
         <p className="error-message">

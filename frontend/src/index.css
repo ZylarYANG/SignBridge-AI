@@ -375,3 +375,39 @@ button {
   }
 }
 
+.api-result,
+.api-error {
+  margin-top: 16px;
+  padding: 16px;
+
+  border-radius: 14px;
+}
+
+.api-result {
+  border:
+    1px solid #cce8d5;
+
+  background:
+    #f2fbf5;
+}
+
+.api-error {
+  border:
+    1px solid #f0cccc;
+
+  background:
+    #fff5f5;
+}
+
+.api-result strong,
+.api-error strong {
+  display: block;
+
+  margin-bottom: 8px;
+}
+
+.api-result p,
+.api-error p {
+  margin: 5px 0;
+}
+
