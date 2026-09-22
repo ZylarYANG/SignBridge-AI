@@ -308,6 +308,11 @@ dependencies:
   value:
     marketplace_plugin_unique_identifier: langgenius/json_process:0.0.8@3333687ec0412e1f2a1798d632fc5f3187f36ebd4bf2432a599a96c74e92f503
     version: null
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/tongyi:0.2.22@9cea96ffc7977f536c02999c80ff1283b1819aab9b6fa2fdf789d0c6c7d03715
+    version: null
 kind: app
 version: 0.7.0
 workflow:
@@ -609,8 +614,10 @@ workflow:
           code\"] if errors_sorted else \"\"\n        top_error_type = errors_sorted[0].get(\"\
           type\", \"\") if errors_sorted else \"\"\n        top_error_severity = errors_sorted[0].get(\"\
           severity\", 0) if errors_sorted else 0\n\n        is_correct = (prediction_label\
-          \ == target_label)\n\n        return {\n            \"target_label\": target_label,\n\
-          \            \"prediction_label\": prediction_label,\n            \"confidence\"\
+          \ == target_label)\n\n        # 新增：拼接检索查询词\n        search_query = f\"{target_label}\
+          \ {top_error_code}\"\n\n        return {\n            \"target_label\":\
+          \ target_label,\n            \"search_query\": search_query,\n         \
+          \   \"prediction_label\": prediction_label,\n            \"confidence\"\
           : confidence,\n            \"input_usable\": input_usable,\n           \
           \ \"overall_score\": overall,\n            \"handshape_score\": handshape,\n\
           \            \"trajectory_score\": trajectory,\n            \"position_score\"\
@@ -644,6 +651,9 @@ workflow:
             children: null
             type: number
           prediction_label:
+            children: null
+            type: string
+          search_query:
             children: null
             type: string
           target_label:
@@ -685,7 +695,7 @@ workflow:
       positionAbsolute:
         x: 342
         y: 32.16666666666666
-      selected: true
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -714,7 +724,7 @@ workflow:
       positionAbsolute:
         x: 684
         y: 12.166666666666657
-      selected: true
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -807,10 +817,11 @@ workflow:
             - '1789891090553'
             - top_error_code
           logical_operator: and
+        desc: 、
         selected: false
         title: 判断是否正确
         type: if-else
-      height: 146
+      height: 174
       id: '1789893810680'
       position:
         x: 1408
@@ -818,7 +829,7 @@ workflow:
       positionAbsolute:
         x: 1408
         y: 246.56666666666666
-      selected: true
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -950,16 +961,18 @@ workflow:
           name: deepseek-v4-flash
           provider: langgenius/deepseek/deepseek
         multiple_retrieval_config:
-          reranking_enable: false
+          reranking_enable: true
           reranking_mode: reranking_model
-          reranking_model: null
-          score_threshold: null
-          top_k: 3
+          reranking_model:
+            model: qwen3-rerank
+            provider: langgenius/tongyi/tongyi
+          score_threshold: 0.49
+          top_k: 5
           weights: null
         query_attachment_selector: []
         query_variable_selector:
         - '1789891090553'
-        - prediction_label
+        - search_query
         retrieval_mode: multiple
         selected: false
         title: 知识检索
@@ -972,7 +985,7 @@ workflow:
       positionAbsolute:
         x: 2084.375019617617
         y: 679.7808296778746
-      selected: false
+      selected: true
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -997,7 +1010,7 @@ workflow:
       positionAbsolute:
         x: 1256.6578626961905
         y: 811.5284557453826
-      selected: true
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom-note
@@ -1050,7 +1063,7 @@ workflow:
       positionAbsolute:
         x: 2535.2320041842127
         y: 679.7808296778746
-      selected: true
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -1206,7 +1219,7 @@ workflow:
       positionAbsolute:
         x: 2832.088540496972
         y: 679.7808296778746
-      selected: true
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -1226,7 +1239,7 @@ workflow:
       positionAbsolute:
         x: 3249.7352292496457
         y: 837.9704948657246
-      selected: true
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -1247,7 +1260,7 @@ workflow:
         selected: false
         title: 输出 2
         type: end
-      height: 87
+      height: 113
       id: '1789968074607'
       position:
         x: 3249.7352292496457
@@ -1255,7 +1268,7 @@ workflow:
       positionAbsolute:
         x: 3249.7352292496457
         y: 630.4611468179544
-      selected: true
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -1304,14 +1317,14 @@ workflow:
       positionAbsolute:
         x: 2091.3757272527314
         y: 397.2003090256291
-      selected: true
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
       width: 241
       zIndex: 0
     viewport:
-      x: -2736.2353530190417
-      y: -212.961171568679
-      zoom: 1.0000000367242603
+      x: -2050.738221854353
+      y: -150.23078058720944
+      zoom: 1.0440630942659068
   rag_pipeline_variables: []
