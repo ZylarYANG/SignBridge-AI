@@ -6,20 +6,11 @@ import type {
   RawDatasetFrame,
 } from "./api";
 
+import type {
+  CollectionSign,
+  QualityPolicy,
+} from "./catalog";
 
-export type HandednessPolicy =
-  | "dominant_either"
-  | "both_hands";
-
-export type DirectionReference =
-  | "body_relative"
-  | "self_relative"
-  | "interlocutor_relative";
-
-export type RequiredPart =
-  | "upper_body"
-  | "active_hand"
-  | "both_hands";
 
 export type ActiveHand =
   | "left"
@@ -28,27 +19,9 @@ export type ActiveHand =
   | "none";
 
 
-export type CollectionSign = {
-  classId: number;
-  signId: string;
-  label: string;
-
-  handednessPolicy:
-    HandednessPolicy;
-
-  requiredParts:
-    RequiredPart[];
-
-  directionReference:
-    DirectionReference;
-
-  directionSensitive:
-    boolean;
-};
-
-
 export type DatasetQualityResult = {
-  inputUsable: boolean;
+  inputUsable:
+    boolean;
 
   landmarkValidRatio:
     number;
@@ -70,238 +43,6 @@ export type DatasetQualityResult = {
 };
 
 
-export const COLLECTION_TARGET_TAKES = 5;
-
-export const COLLECTION_SIGNS:
-  CollectionSign[] = [
-    {
-      classId: 0,
-      signId: "CSL_thanks",
-      label: "谢谢",
-      handednessPolicy:
-        "dominant_either",
-      requiredParts: [
-        "upper_body",
-        "active_hand",
-      ],
-      directionReference:
-        "body_relative",
-      directionSensitive:
-        false,
-    },
-    {
-      classId: 1,
-      signId: "CSL_bye",
-      label: "再见",
-      handednessPolicy:
-        "dominant_either",
-      requiredParts: [
-        "upper_body",
-        "active_hand",
-      ],
-      directionReference:
-        "body_relative",
-      directionSensitive:
-        false,
-    },
-    {
-      classId: 2,
-      signId: "CSL_friend",
-      label: "朋友",
-      handednessPolicy:
-        "both_hands",
-      requiredParts: [
-        "upper_body",
-        "both_hands",
-      ],
-      directionReference:
-        "body_relative",
-      directionSensitive:
-        false,
-    },
-    {
-      classId: 3,
-      signId: "CSL_hello",
-      label: "你好",
-      handednessPolicy:
-        "dominant_either",
-      requiredParts: [
-        "upper_body",
-        "active_hand",
-      ],
-      directionReference:
-        "interlocutor_relative",
-      directionSensitive:
-        true,
-    },
-    {
-      classId: 4,
-      signId: "CSL_help",
-      label: "帮助",
-      handednessPolicy:
-        "both_hands",
-      requiredParts: [
-        "upper_body",
-        "both_hands",
-      ],
-      directionReference:
-        "interlocutor_relative",
-      directionSensitive:
-        true,
-    },
-    {
-      classId: 5,
-      signId: "CSL_like",
-      label: "喜欢",
-      handednessPolicy:
-        "dominant_either",
-      requiredParts: [
-        "upper_body",
-        "active_hand",
-      ],
-      directionReference:
-        "body_relative",
-      directionSensitive:
-        false,
-    },
-    {
-      classId: 6,
-      signId: "CSL_me",
-      label: "我",
-      handednessPolicy:
-        "dominant_either",
-      requiredParts: [
-        "upper_body",
-        "active_hand",
-      ],
-      directionReference:
-        "self_relative",
-      directionSensitive:
-        true,
-    },
-    {
-      classId: 7,
-      signId: "CSL_name",
-      label: "名字",
-      handednessPolicy:
-        "both_hands",
-      requiredParts: [
-        "upper_body",
-        "both_hands",
-      ],
-      directionReference:
-        "body_relative",
-      directionSensitive:
-        false,
-    },
-    {
-      classId: 8,
-      signId: "CSL_never_mind",
-      label: "没关系",
-      handednessPolicy:
-        "both_hands",
-      requiredParts: [
-        "upper_body",
-        "both_hands",
-      ],
-      directionReference:
-        "body_relative",
-      directionSensitive:
-        false,
-    },
-    {
-      classId: 9,
-      signId: "CSL_no",
-      label: "不",
-      handednessPolicy:
-        "dominant_either",
-      requiredParts: [
-        "upper_body",
-        "active_hand",
-      ],
-      directionReference:
-        "body_relative",
-      directionSensitive:
-        false,
-    },
-    {
-      classId: 10,
-      signId: "CSL_please",
-      label: "请",
-      handednessPolicy:
-        "both_hands",
-      requiredParts: [
-        "upper_body",
-        "both_hands",
-      ],
-      directionReference:
-        "body_relative",
-      directionSensitive:
-        false,
-    },
-    {
-      classId: 11,
-      signId: "CSL_sorry",
-      label: "对不起",
-      handednessPolicy:
-        "dominant_either",
-      requiredParts: [
-        "upper_body",
-        "active_hand",
-      ],
-      directionReference:
-        "self_relative",
-      directionSensitive:
-        false,
-    },
-    {
-      classId: 12,
-      signId: "CSL_what",
-      label: "什么",
-      handednessPolicy:
-        "both_hands",
-      requiredParts: [
-        "upper_body",
-        "both_hands",
-      ],
-      directionReference:
-        "body_relative",
-      directionSensitive:
-        false,
-    },
-    {
-      classId: 13,
-      signId: "CSL_yes",
-      label: "是",
-      handednessPolicy:
-        "dominant_either",
-      requiredParts: [
-        "upper_body",
-        "active_hand",
-      ],
-      directionReference:
-        "body_relative",
-      directionSensitive:
-        false,
-    },
-    {
-      classId: 14,
-      signId: "CSL_you",
-      label: "你",
-      handednessPolicy:
-        "dominant_either",
-      requiredParts: [
-        "upper_body",
-        "active_hand",
-      ],
-      directionReference:
-        "interlocutor_relative",
-      directionSensitive:
-        true,
-    },
-  ];
-
-
 export function buildSampleId(
   signerId: string,
   signId: string,
@@ -312,25 +53,37 @@ export function buildSampleId(
       .trim()
       .toUpperCase();
 
+
   if (!normalizedSigner) {
     throw new Error(
       "signerId cannot be empty."
     );
   }
 
+
   if (
-    !Number.isInteger(takeId) ||
+    !Number.isInteger(
+      takeId
+    )
+    ||
     takeId < 1
   ) {
     throw new Error(
-      "takeId must be a positive integer."
+      "takeId must be "
+      +
+      "a positive integer."
     );
   }
 
+
   return [
     normalizedSigner,
+
     signId,
-    String(takeId).padStart(
+
+    String(
+      takeId
+    ).padStart(
       4,
       "0"
     ),
@@ -339,27 +92,39 @@ export function buildSampleId(
 
 
 export function toDatasetRawFrames(
-  frames: LandmarkFrame[]
+  frames:
+    LandmarkFrame[]
 ): RawDatasetFrame[] {
-  if (frames.length === 0) {
+  if (
+    frames.length === 0
+  ) {
     return [];
   }
 
+
   const startTime =
-    frames[0].timestampMs;
+    frames[0]
+      .timestampMs;
+
 
   return frames.map(
     (frame) => ({
       timestamp_ms:
-        frame.timestampMs -
+        frame.timestampMs
+        -
         startTime,
 
       landmarks:
         frame.landmarks.map(
           (point) => ({
-            x: point.x,
-            y: point.y,
-            valid: point.valid,
+            x:
+              point.x,
+
+            y:
+              point.y,
+
+            valid:
+              point.valid,
           })
         ),
     })
@@ -368,32 +133,45 @@ export function toDatasetRawFrames(
 
 
 export function getCaptureDurationMs(
-  frames: LandmarkFrame[]
+  frames:
+    LandmarkFrame[]
 ): number {
-  if (frames.length < 2) {
+  if (
+    frames.length < 2
+  ) {
     return 1;
   }
+
 
   return Math.max(
     1,
 
     frames[
       frames.length - 1
-    ].timestampMs -
-      frames[0].timestampMs
+    ].timestampMs
+    -
+    frames[0]
+      .timestampMs
   );
 }
 
 
 /**
- * 一只手 21 个点。
+ * 判断一帧中的指定手是否可用。
  *
- * 至少 75% 的关键点有效，
- * 认为这一帧该手可用。
+ * 阈值由 sign_catalog.json
+ * quality_policy 提供，
+ * 不再在前端硬编码。
  */
 function isHandUsable(
-  frame: LandmarkFrame,
-  startIndex: number
+  frame:
+    LandmarkFrame,
+
+  startIndex:
+    number,
+
+  minimumLandmarkRatio:
+    number
 ): boolean {
   const hand =
     frame.landmarks.slice(
@@ -401,70 +179,101 @@ function isHandUsable(
       startIndex + 21
     );
 
+
   const validCount =
     hand.filter(
       (point) =>
         point.valid
     ).length;
 
+
   return (
-    validCount / 21 >=
-    0.75
+    validCount / 21
+    >=
+    minimumLandmarkRatio
   );
 }
 
 
 /**
- * 当前实时画面是否满足
- * 该词最基本的输入要求。
+ * 当前实时画面只负责给出提示。
  *
- * Canonical 54/54 不参与判断。
+ * 不阻止用户点击采集。
+ *
+ * 真正的数据质量判定发生在
+ * calculateDatasetQuality。
  */
 export function getLiveInputReadiness(
-  sign: CollectionSign,
-  poseDetected: boolean,
-  handsDetected: number
+  sign:
+    CollectionSign,
+
+  poseDetected:
+    boolean,
+
+  handsDetected:
+    number
 ): {
-  ready: boolean;
-  message: string;
+  ready:
+    boolean;
+
+  message:
+    string;
 } {
   if (!poseDetected) {
     return {
-      ready: false,
+      ready:
+        false,
+
       message:
         "请保持上半身进入画面",
     };
   }
 
+
   if (
     sign.handednessPolicy ===
     "both_hands"
   ) {
-    if (handsDetected < 2) {
+    if (
+      handsDetected < 2
+    ) {
       return {
-        ready: false,
+        ready:
+          false,
+
         message:
           "该词需要双手完整进入画面",
       };
     }
 
+
     return {
-      ready: true,
+      ready:
+        true,
+
       message:
         "Required Input Ready",
     };
   }
 
-  if (handsDetected < 1) {
+
+  if (
+    handsDetected < 1
+  ) {
     return {
-      ready: false,
+      ready:
+        false,
+
       message:
         "请至少保持一只有效手进入画面",
     };
   }
 
+
   return {
-    ready: true,
+    ready:
+      true,
+
     message:
       "Required Input Ready",
   };
@@ -472,48 +281,71 @@ export function getLiveInputReadiness(
 
 
 /**
- * 对一次完整采集做真正的数据质量判断。
+ * 对一次完整采集进行质量判断。
  *
- * 单手词：
- * 左右任一只手持续稳定即可。
+ * 所有阈值来自
+ * config/sign_catalog.json。
  *
- * 双手词：
- * 必须双手同时稳定。
- *
- * Canonical 54/54 只保留为
- * 调试/检测指标，不作为保存门槛。
+ * 前端不再维护第二套规则。
  */
 export function calculateDatasetQuality(
-  frames: LandmarkFrame[],
-  sign: CollectionSign
+  frames:
+    LandmarkFrame[],
+
+  sign:
+    CollectionSign,
+
+  qualityPolicy:
+    QualityPolicy
 ): DatasetQualityResult {
-  if (frames.length === 0) {
+  if (
+    frames.length === 0
+  ) {
     return {
-      inputUsable: false,
+      inputUsable:
+        false,
 
-      landmarkValidRatio: 0,
-      shoulderUsableRatio: 0,
+      landmarkValidRatio:
+        0,
 
-      leftHandUsableRatio: 0,
-      rightHandUsableRatio: 0,
-      bothHandsUsableRatio: 0,
+      shoulderUsableRatio:
+        0,
 
-      activeHand: "none",
+      leftHandUsableRatio:
+        0,
+
+      rightHandUsableRatio:
+        0,
+
+      bothHandsUsableRatio:
+        0,
+
+      activeHand:
+        "none",
     };
   }
 
-  let validPointCount = 0;
 
-  let shoulderUsableFrames = 0;
+  let validPointCount =
+    0;
 
-  let leftHandUsableFrames = 0;
+  let shoulderUsableFrames =
+    0;
 
-  let rightHandUsableFrames = 0;
+  let leftHandUsableFrames =
+    0;
 
-  let bothHandsUsableFrames = 0;
+  let rightHandUsableFrames =
+    0;
+
+  let bothHandsUsableFrames =
+    0;
 
 
-  for (const frame of frames) {
+  for (
+    const frame
+    of frames
+  ) {
     validPointCount +=
       frame.landmarks.filter(
         (point) =>
@@ -522,46 +354,71 @@ export function calculateDatasetQuality(
 
 
     const leftShoulder =
-      frame.landmarks[45];
+      frame.landmarks[
+        45
+      ];
 
     const rightShoulder =
-      frame.landmarks[46];
+      frame.landmarks[
+        46
+      ];
 
 
     if (
-      leftShoulder?.valid &&
+      leftShoulder?.valid
+      &&
       rightShoulder?.valid
     ) {
-      shoulderUsableFrames += 1;
+      shoulderUsableFrames +=
+        1;
     }
 
 
     const leftReady =
       isHandUsable(
         frame,
-        0
+
+        0,
+
+        qualityPolicy
+          .minimumHandLandmarkRatioPerFrame
       );
+
 
     const rightReady =
       isHandUsable(
         frame,
-        21
+
+        21,
+
+        qualityPolicy
+          .minimumHandLandmarkRatioPerFrame
       );
 
 
-    if (leftReady) {
-      leftHandUsableFrames += 1;
+    if (
+      leftReady
+    ) {
+      leftHandUsableFrames +=
+        1;
     }
 
-    if (rightReady) {
-      rightHandUsableFrames += 1;
-    }
 
     if (
-      leftReady &&
       rightReady
     ) {
-      bothHandsUsableFrames += 1;
+      rightHandUsableFrames +=
+        1;
+    }
+
+
+    if (
+      leftReady
+      &&
+      rightReady
+    ) {
+      bothHandsUsableFrames +=
+        1;
     }
   }
 
@@ -571,32 +428,43 @@ export function calculateDatasetQuality(
 
 
   const landmarkValidRatio =
-    validPointCount /
-    (frameCount * 54);
+    validPointCount
+    /
+    (
+      frameCount
+      *
+      54
+    );
 
 
   const shoulderUsableRatio =
-    shoulderUsableFrames /
+    shoulderUsableFrames
+    /
     frameCount;
 
 
   const leftHandUsableRatio =
-    leftHandUsableFrames /
+    leftHandUsableFrames
+    /
     frameCount;
 
 
   const rightHandUsableRatio =
-    rightHandUsableFrames /
+    rightHandUsableFrames
+    /
     frameCount;
 
 
   const bothHandsUsableRatio =
-    bothHandsUsableFrames /
+    bothHandsUsableFrames
+    /
     frameCount;
 
 
   let activeHand:
-    ActiveHand = "none";
+    ActiveHand =
+      "none";
+
 
   let handRequirementReady =
     false;
@@ -607,15 +475,19 @@ export function calculateDatasetQuality(
     "both_hands"
   ) {
     if (
-      bothHandsUsableRatio >=
-      0.6
+      bothHandsUsableRatio
+      >=
+      qualityPolicy
+        .minimumBothHandsUsableRatio
     ) {
-      activeHand = "both";
+      activeHand =
+        "both";
 
       handRequirementReady =
         true;
     }
-  } else {
+  }
+  else {
     const bestRatio =
       Math.max(
         leftHandUsableRatio,
@@ -624,14 +496,20 @@ export function calculateDatasetQuality(
 
 
     if (
-      bestRatio >=
-      0.5
+      bestRatio
+      >=
+      qualityPolicy
+        .minimumSingleHandUsableRatio
     ) {
       activeHand =
-        leftHandUsableRatio >=
+        leftHandUsableRatio
+        >=
         rightHandUsableRatio
-          ? "left"
-          : "right";
+          ?
+            "left"
+          :
+            "right";
+
 
       handRequirementReady =
         true;
@@ -640,9 +518,16 @@ export function calculateDatasetQuality(
 
 
   const inputUsable =
-    frameCount >= 10 &&
-    shoulderUsableRatio >=
-      0.8 &&
+    frameCount
+      >=
+      qualityPolicy
+        .minimumRawFrames
+    &&
+    shoulderUsableRatio
+      >=
+      qualityPolicy
+        .minimumShoulderUsableRatio
+    &&
     handRequirementReady;
 
 
@@ -650,10 +535,13 @@ export function calculateDatasetQuality(
     inputUsable,
 
     landmarkValidRatio,
+
     shoulderUsableRatio,
 
     leftHandUsableRatio,
+
     rightHandUsableRatio,
+
     bothHandsUsableRatio,
 
     activeHand,

@@ -31,7 +31,6 @@ import {
 import {
   buildSampleId,
   calculateDatasetQuality,
-  COLLECTION_SIGNS,
   getCaptureDurationMs,
   getLiveInputReadiness,
   toDatasetRawFrames,
@@ -50,6 +49,12 @@ import {
   getCollectionProfile,
   type CollectionProfileId,
 } from "../services/collectionProfiles";
+
+import {
+  fetchSignCatalog,
+  type CollectionCatalog,
+  type CollectionSign,
+} from "../services/catalog";
 
 
 type CameraStatus =
@@ -104,6 +109,30 @@ const QUICK_SIGNERS = [
   "S002",
   "S003",
 ];
+
+
+const EMPTY_SIGN:
+  CollectionSign = {
+    classId: -1,
+
+    signId: "__loading__",
+
+    label: "加载中",
+
+    handednessPolicy:
+      "dominant_either",
+
+    requiredParts: [
+      "upper_body",
+      "active_hand",
+    ],
+
+    directionReference:
+      "body_relative",
+
+    directionSensitive:
+      false,
+  };
 
 
 const BODY_INDICES = [
@@ -584,10 +613,7 @@ export function CameraView() {
     selectedSignId,
     setSelectedSignId,
   ] =
-    useState(
-      COLLECTION_SIGNS[0]
-        .signId
-    );
+    useState("");
 
   const [
     takeId,
@@ -669,6 +695,28 @@ export function CameraView() {
 
 
   const [
+    catalog,
+    setCatalog,
+  ] =
+    useState<
+      CollectionCatalog | null
+    >(null);
+
+
+  const [
+    catalogStatus,
+    setCatalogStatus,
+  ] =
+    useState<
+      "loading" |
+      "ready" |
+      "error"
+    >(
+      "loading"
+    );
+
+
+  const [
     practiceResult,
     setPracticeResult,
   ] =
@@ -699,13 +747,22 @@ export function CameraView() {
     useState(false);
 
 
+  const collectionSigns =
+    catalog?.signs
+    ??
+    [];
+
+
   const selectedSign =
-    COLLECTION_SIGNS.find(
+    collectionSigns.find(
       (sign) =>
         sign.signId ===
         selectedSignId
-    ) ??
-    COLLECTION_SIGNS[0];
+    )
+    ??
+    collectionSigns[0]
+    ??
+    EMPTY_SIGN;
 
 
   const currentSignSamples =
@@ -754,7 +811,7 @@ export function CameraView() {
 
 
   const overallTarget =
-    COLLECTION_SIGNS.length
+    collectionSigns.length
     *
     targetTakes;
 
@@ -869,8 +926,16 @@ export function CameraView() {
     currentSignId:
       string
   ): string | null {
+    if (
+      collectionSigns.length ===
+      0
+    ) {
+      return null;
+    }
+
+
     const currentIndex =
-      COLLECTION_SIGNS
+      collectionSigns
         .findIndex(
           (sign) =>
             sign.signId ===
@@ -880,7 +945,7 @@ export function CameraView() {
     for (
       let offset = 1;
       offset <=
-        COLLECTION_SIGNS.length;
+        collectionSigns.length;
       offset += 1
     ) {
       const index =
@@ -889,10 +954,10 @@ export function CameraView() {
           offset
         )
         %
-        COLLECTION_SIGNS.length;
+        collectionSigns.length;
 
       const sign =
-        COLLECTION_SIGNS[
+        collectionSigns[
           index
         ];
 
@@ -979,6 +1044,98 @@ export function CameraView() {
       );
     }
   }
+
+
+  useEffect(() => {
+    let cancelled =
+      false;
+
+
+    async function loadCatalog() {
+      try {
+        setCatalogStatus(
+          "loading"
+        );
+
+
+        const loadedCatalog =
+          await fetchSignCatalog();
+
+
+        if (cancelled) {
+          return;
+        }
+
+
+        setCatalog(
+          loadedCatalog
+        );
+
+
+        setSelectedSignId(
+          (current) => {
+            const stillExists =
+              loadedCatalog
+                .signs
+                .some(
+                  (sign) =>
+                    sign.signId ===
+                    current
+                );
+
+
+            if (stillExists) {
+              return current;
+            }
+
+
+            return (
+              loadedCatalog
+                .signs[0]
+                ?.signId
+              ??
+              ""
+            );
+          }
+        );
+
+
+        setCatalogStatus(
+          "ready"
+        );
+      }
+      catch (error) {
+        console.error(
+          "Catalog load failed:",
+          error
+        );
+
+
+        if (!cancelled) {
+          setCatalogStatus(
+            "error"
+          );
+
+
+          setErrorMessage(
+            error instanceof Error
+              ?
+                error.message
+              :
+                "词库加载失败。"
+          );
+        }
+      }
+    }
+
+
+    void loadCatalog();
+
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
 
   useEffect(() => {
@@ -1401,7 +1558,7 @@ export function CameraView() {
 
 
       const sign =
-        COLLECTION_SIGNS.find(
+        collectionSigns.find(
           (item) =>
             item.signId ===
             context.signId
@@ -1414,10 +1571,18 @@ export function CameraView() {
       }
 
 
+      if (!catalog) {
+        throw new Error(
+          "Sign catalog is not loaded."
+        );
+      }
+
+
       const quality =
         calculateDatasetQuality(
           frames,
-          sign
+          sign,
+          catalog.qualityPolicy
         );
 
 
@@ -1586,6 +1751,8 @@ export function CameraView() {
       cameraStatus !==
         "ready" ||
       visionStatus !==
+        "ready" ||
+      catalogStatus !==
         "ready" ||
       captureBusy ||
       historyLoading
@@ -1905,6 +2072,131 @@ export function CameraView() {
                         "完成"
                       :
                         "失败";
+
+
+  useEffect(() => {
+    const usableCount =
+      currentSignSamples.filter(
+        (sample) =>
+          sample.input_usable
+      ).length;
+
+
+    const canCapture =
+      visionStatus ===
+        "ready"
+      &&
+      !captureBusy
+      &&
+      !historyLoading
+      &&
+      (
+        workMode ===
+          "practice"
+        ||
+        (
+          catalogStatus ===
+            "ready"
+          &&
+          isValidSignerId(
+            signerId
+          )
+        )
+      );
+
+
+    window.dispatchEvent(
+      new CustomEvent(
+        "signbridge:workbench-status",
+        {
+          detail: {
+            workMode,
+
+            signLabel:
+              selectedSign.label,
+
+            signId:
+              selectedSign.signId,
+
+            signerId:
+              normalizeSignerId(
+                signerId
+              ),
+
+            profileName:
+              activeProfile.name,
+
+            targetTakes,
+
+            usableCount,
+
+            takeId,
+
+            poseDetected,
+
+            handsDetected,
+
+            readinessReady:
+              liveInputReadiness.ready,
+
+            readinessMessage:
+              liveInputReadiness.message,
+
+            captureStatus,
+
+            countdownValue,
+
+            cameraStatus,
+
+            visionStatus,
+
+            canCapture,
+          },
+        }
+      )
+    );
+  }, [
+    workMode,
+    selectedSign.label,
+    selectedSign.signId,
+    signerId,
+    activeProfile.name,
+    targetTakes,
+    datasetSamples,
+    takeId,
+    poseDetected,
+    handsDetected,
+    liveInputReadiness.ready,
+    liveInputReadiness.message,
+    captureStatus,
+    countdownValue,
+    cameraStatus,
+    visionStatus,
+    captureBusy,
+    historyLoading,
+    catalogStatus,
+  ]);
+
+
+  useEffect(() => {
+    function handleSidebarCapture() {
+      startCapture();
+    }
+
+
+    window.addEventListener(
+      "signbridge:start-capture",
+      handleSidebarCapture
+    );
+
+
+    return () => {
+      window.removeEventListener(
+        "signbridge:start-capture",
+        handleSidebarCapture
+      );
+    };
+  });
 
 
   return (
@@ -2301,7 +2593,7 @@ export function CameraView() {
 
           <div className="sign-progress-grid">
 
-            {COLLECTION_SIGNS.map(
+            {collectionSigns.map(
               (sign) => {
                 const samples =
                   datasetSamples.filter(
@@ -2489,7 +2781,7 @@ export function CameraView() {
             }
           >
             {
-              COLLECTION_SIGNS.map(
+              collectionSigns.map(
                 (sign) => (
                   <option
                     key={
@@ -2777,6 +3069,8 @@ export function CameraView() {
           disabled={
             visionStatus !==
               "ready" ||
+            catalogStatus !==
+              "ready" ||
             captureBusy ||
             historyLoading ||
             (
@@ -2919,7 +3213,7 @@ export function CameraView() {
                       currentSignSamples.map(
                         (sample) => {
                           const sign =
-                            COLLECTION_SIGNS.find(
+                            collectionSigns.find(
                               (item) =>
                                 item.signId ===
                                 sample.sign_id

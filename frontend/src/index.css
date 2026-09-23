@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   font-family:
     Inter,
     "Segoe UI",
@@ -1320,3 +1320,719 @@ button {
     flex-direction: column;
   }
 }
+
+
+/* ===== SignBridge Workbench Visual Final START ===== */
+
+/* ----------------------------------------
+   Collection plan
+   ---------------------------------------- */
+
+.collection-profile-panel {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+
+  gap: 16px !important;
+
+  margin: 0 0 18px !important;
+  padding: 18px !important;
+
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+
+  background: #ffffff !important;
+
+  box-shadow:
+    0 7px 24px
+    rgba(15, 23, 42, 0.045) !important;
+}
+
+
+.collection-profile-heading {
+  display: flex !important;
+
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+
+  gap: 18px !important;
+}
+
+
+.collection-profile-heading > div {
+  display: flex !important;
+  flex-direction: column !important;
+
+  gap: 4px !important;
+}
+
+
+.collection-profile-heading > div > strong {
+  margin: 0 !important;
+
+  font-size: 15px !important;
+  line-height: 1.4 !important;
+  font-weight: 700 !important;
+
+  color: #172033 !important;
+}
+
+
+.collection-profile-heading > div > span {
+  font-size: 12px !important;
+  line-height: 1.55 !important;
+
+  color: #718096 !important;
+}
+
+
+.collection-profile-heading > strong {
+  flex-shrink: 0 !important;
+
+  padding: 6px 11px !important;
+
+  border: 1px solid #dbe3ed !important;
+  border-radius: 999px !important;
+
+  font-size: 12px !important;
+  font-weight: 700 !important;
+
+  color: #334155 !important;
+  background: #f5f7fa !important;
+}
+
+
+.collection-profile-options {
+  display: grid !important;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    ) !important;
+
+  gap: 9px !important;
+}
+
+
+.collection-profile-option {
+  appearance: none !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+
+  gap: 4px !important;
+
+  min-width: 0 !important;
+  min-height: 66px !important;
+
+  padding: 10px 12px !important;
+
+  border: 1px solid #dce3ec !important;
+  border-radius: 11px !important;
+
+  cursor: pointer !important;
+
+  text-align: left !important;
+
+  color: #344054 !important;
+  background: #fafbfc !important;
+
+  box-shadow: none !important;
+
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease !important;
+}
+
+
+.collection-profile-option:hover:not(:disabled) {
+  transform: translateY(-1px) !important;
+
+  border-color: #98a6b9 !important;
+
+  background: #ffffff !important;
+
+  box-shadow:
+    0 6px 16px
+    rgba(15, 23, 42, 0.06) !important;
+}
+
+
+.collection-profile-option > strong {
+  font-size: 14px !important;
+  line-height: 1.35 !important;
+  font-weight: 700 !important;
+
+  color: inherit !important;
+}
+
+
+.collection-profile-option > span {
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+
+  color: #7a8799 !important;
+}
+
+
+.collection-profile-option-active {
+  transform: none !important;
+
+  border-color: #172033 !important;
+
+  color: #ffffff !important;
+  background: #172033 !important;
+
+  box-shadow:
+    0 7px 18px
+    rgba(15, 23, 42, 0.14) !important;
+}
+
+
+.collection-profile-option-active > span {
+  color: #d3dae5 !important;
+}
+
+
+.collection-session-field {
+  display: grid !important;
+
+  grid-template-columns:
+    72px
+    minmax(180px, 260px)
+    minmax(0, 1fr) !important;
+
+  align-items: center !important;
+
+  gap: 10px !important;
+
+  padding-top: 14px !important;
+
+  border-top:
+    1px solid #edf0f4 !important;
+}
+
+
+.collection-session-field label,
+.custom-target-field label {
+  margin: 0 !important;
+
+  font-size: 12px !important;
+  font-weight: 700 !important;
+
+  color: #536174 !important;
+}
+
+
+.collection-session-field input,
+.custom-target-field input {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-height: 40px !important;
+
+  padding: 8px 11px !important;
+
+  border: 1px solid #cfd8e4 !important;
+  border-radius: 9px !important;
+
+  outline: none !important;
+
+  font: inherit !important;
+  font-size: 13px !important;
+
+  color: #172033 !important;
+  background: #ffffff !important;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease !important;
+}
+
+
+.collection-session-field input:focus,
+.custom-target-field input:focus {
+  border-color: #7789a2 !important;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(100, 116, 139, 0.1) !important;
+}
+
+
+.collection-session-field small {
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+
+  color: #8d99aa !important;
+}
+
+
+.custom-target-field {
+  display: grid !important;
+
+  grid-template-columns:
+    120px
+    120px !important;
+
+  align-items: center !important;
+
+  gap: 10px !important;
+
+  padding: 10px 12px !important;
+
+  border-radius: 10px !important;
+
+  background: #f7f9fb !important;
+}
+
+
+/* ----------------------------------------
+   Signer toolbar
+   ---------------------------------------- */
+
+.collector-toolbar {
+  box-sizing: border-box !important;
+
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 15px !important;
+
+  background: #f8fafc !important;
+
+  box-shadow: none !important;
+}
+
+
+.quick-signer,
+.countdown-option {
+  appearance: none !important;
+
+  border: 1px solid #d8e0ea !important;
+  border-radius: 9px !important;
+
+  color: #344054 !important;
+  background: #ffffff !important;
+}
+
+
+.quick-signer-active,
+.countdown-option-active {
+  border-color: #60738e !important;
+
+  color: #172033 !important;
+  background: #ffffff !important;
+
+  box-shadow:
+    0 0 0 2px
+    rgba(96, 115, 142, 0.12) !important;
+}
+
+
+/* ----------------------------------------
+   Collector profile
+   ---------------------------------------- */
+
+.collector-profile-card {
+  box-sizing: border-box !important;
+
+  margin-bottom: 16px !important;
+  padding: 18px !important;
+
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+
+  background: #ffffff !important;
+
+  box-shadow:
+    0 6px 22px
+    rgba(15, 23, 42, 0.035) !important;
+}
+
+
+.collector-profile-grid select,
+.collector-note-field textarea {
+  border: 1px solid #d4dce7 !important;
+  border-radius: 9px !important;
+
+  color: #172033 !important;
+  background: #ffffff !important;
+}
+
+
+.collector-profile-grid select:focus,
+.collector-note-field textarea:focus {
+  outline: none !important;
+
+  border-color: #7c8ba0 !important;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(100, 116, 139, 0.1) !important;
+}
+
+
+/* ----------------------------------------
+   Dynamic workbench sidebar
+   ---------------------------------------- */
+
+.workbench-sidebar-card {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+
+  width: 100% !important;
+
+  padding: 26px !important;
+
+  border: 1px solid #e1e7ee !important;
+  border-radius: 22px !important;
+
+  color: #172033 !important;
+  background: #ffffff !important;
+
+  box-shadow:
+    0 15px 42px
+    rgba(15, 23, 42, 0.065) !important;
+}
+
+
+.workbench-sidebar-eyebrow {
+  margin: 0 0 12px !important;
+
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  font-weight: 600 !important;
+
+  letter-spacing: 0.02em !important;
+
+  color: #8a97a8 !important;
+}
+
+
+.workbench-sidebar-target {
+  display: flex !important;
+  flex-direction: column !important;
+
+  gap: 5px !important;
+
+  padding-bottom: 20px !important;
+
+  border-bottom:
+    1px solid #edf1f5 !important;
+}
+
+
+.workbench-sidebar-target h2 {
+  margin: 0 !important;
+
+  font-size: 30px !important;
+  line-height: 1.15 !important;
+  font-weight: 750 !important;
+
+  color: #111827 !important;
+}
+
+
+.workbench-sidebar-target code {
+  margin: 0 !important;
+
+  font-family: inherit !important;
+  font-size: 12px !important;
+
+  color: #8d99aa !important;
+
+  background: transparent !important;
+}
+
+
+.workbench-sidebar-section {
+  display: flex !important;
+  flex-direction: column !important;
+
+  margin: 8px 0 0 !important;
+}
+
+
+.workbench-status-row {
+  display: flex !important;
+
+  justify-content: space-between !important;
+  align-items: center !important;
+
+  gap: 16px !important;
+
+  min-height: 47px !important;
+
+  border-bottom:
+    1px solid #f0f3f6 !important;
+}
+
+
+.workbench-status-row > span {
+  flex-shrink: 0 !important;
+
+  font-size: 12px !important;
+  font-weight: 500 !important;
+
+  color: #8491a3 !important;
+}
+
+
+.workbench-status-row > strong {
+  max-width: 66% !important;
+
+  text-align: right !important;
+
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+  font-weight: 700 !important;
+
+  color: #172033 !important;
+}
+
+
+.workbench-status-good {
+  color: #18794e !important;
+}
+
+
+.workbench-status-warning {
+  color: #b5473b !important;
+}
+
+
+.workbench-sidebar-readiness {
+  box-sizing: border-box !important;
+
+  margin-top: 16px !important;
+  padding: 11px 12px !important;
+
+  border-radius: 10px !important;
+
+  font-size: 12px !important;
+  line-height: 1.55 !important;
+}
+
+
+.workbench-sidebar-readiness-good {
+  border: 1px solid #c5e5d2 !important;
+
+  color: #216a48 !important;
+  background: #f0faf4 !important;
+}
+
+
+.workbench-sidebar-readiness-warning {
+  border: 1px solid #f1c7c1 !important;
+
+  color: #9e392f !important;
+  background: #fff4f2 !important;
+}
+
+
+.workbench-capture-state {
+  display: flex !important;
+
+  justify-content: space-between !important;
+  align-items: center !important;
+
+  gap: 12px !important;
+
+  margin-top: 14px !important;
+  padding: 11px 12px !important;
+
+  border-radius: 10px !important;
+
+  background: #f6f8fa !important;
+}
+
+
+.workbench-capture-state > span {
+  font-size: 12px !important;
+
+  color: #8491a3 !important;
+}
+
+
+.workbench-capture-state > strong {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+
+  color: #172033 !important;
+}
+
+
+.workbench-sidebar-primary {
+  appearance: none !important;
+
+  display: flex !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 100% !important;
+  min-height: 50px !important;
+
+  margin-top: 16px !important;
+  padding: 0 16px !important;
+
+  border: 0 !important;
+  border-radius: 11px !important;
+
+  cursor: pointer !important;
+
+  font: inherit !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+
+  color: #ffffff !important;
+  background: #172033 !important;
+
+  box-shadow: none !important;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease !important;
+}
+
+
+.workbench-sidebar-primary:hover:not(:disabled) {
+  transform:
+    translateY(-1px) !important;
+
+  background: #0f172a !important;
+
+  box-shadow:
+    0 8px 20px
+    rgba(15, 23, 42, 0.17) !important;
+}
+
+
+.workbench-sidebar-primary:disabled {
+  transform: none !important;
+
+  cursor: not-allowed !important;
+
+  color: #a2aab7 !important;
+  background: #f0f2f5 !important;
+
+  box-shadow: none !important;
+}
+
+
+.workbench-sidebar-tip {
+  margin: 12px 0 0 !important;
+
+  font-size: 11px !important;
+  line-height: 1.6 !important;
+
+  color: #8996a7 !important;
+}
+
+
+/* ----------------------------------------
+   Slightly improve overall workbench
+   ---------------------------------------- */
+
+.camera-panel {
+  border-radius: 20px !important;
+}
+
+
+.collection-summary > div {
+  border-color: #e4e9ef !important;
+
+  background: #ffffff !important;
+
+  box-shadow:
+    0 3px 12px
+    rgba(15, 23, 42, 0.025) !important;
+}
+
+
+.sign-progress-card {
+  border-color: #e0e6ed !important;
+
+  background: #ffffff !important;
+
+  box-shadow: none !important;
+}
+
+
+.sign-progress-card-active {
+  border-color: #687b96 !important;
+
+  background: #f8fafc !important;
+
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(104, 123, 150, 0.18) !important;
+}
+
+
+.target-action-card {
+  border-color: #e0e6ed !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff,
+      #f8fafc
+    ) !important;
+}
+
+
+/* ----------------------------------------
+   Responsive
+   ---------------------------------------- */
+
+@media (
+  max-width: 900px
+) {
+  .collection-profile-options {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      ) !important;
+  }
+
+
+  .collection-profile-heading {
+    flex-direction:
+      column !important;
+  }
+
+
+  .collection-session-field {
+    grid-template-columns:
+      1fr !important;
+  }
+
+
+  .workbench-sidebar-card {
+    padding:
+      20px !important;
+  }
+}
+
+
+@media (
+  max-width: 520px
+) {
+  .collection-profile-options {
+    grid-template-columns:
+      1fr !important;
+  }
+}
+
+/* ===== SignBridge Workbench Visual Final END ===== */
+
