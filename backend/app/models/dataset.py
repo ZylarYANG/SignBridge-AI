@@ -1,4 +1,4 @@
-﻿from typing import Literal
+from typing import Literal
 
 from pydantic import (
     BaseModel,
@@ -14,7 +14,6 @@ class RawLandmarkPoint(BaseModel):
 
 class RawLandmarkFrame(BaseModel):
     timestamp_ms: float
-
     landmarks: list[
         RawLandmarkPoint
     ]
@@ -81,6 +80,15 @@ class DatasetSampleRequest(BaseModel):
     )
 
     label: str
+
+    collection_profile: Literal[
+        "validation",
+        "formal",
+        "extended",
+        "custom",
+    ] = "validation"
+
+    collection_session_id: str = "default"
 
     capture: CaptureMetadata
 

@@ -19,9 +19,12 @@ import {
 } from "../services/sequenceProcessor";
 
 import {
+  deleteDatasetSample,
+  fetchDatasetSamples,
   saveDatasetSample,
   submitPractice,
   type DatasetSampleResponse,
+  type DatasetSampleSummary,
   type PracticeResponse,
 } from "../services/api";
 
@@ -37,6 +40,16 @@ import {
 import type {
   LandmarkFrame,
 } from "../types/landmark";
+
+import {
+  CollectorProfileCard,
+} from "./CollectorProfileCard";
+
+import {
+  COLLECTION_PROFILES,
+  getCollectionProfile,
+  type CollectionProfileId,
+} from "../services/collectionProfiles";
 
 
 type CameraStatus =
@@ -63,9 +76,34 @@ type WorkMode =
   | "practice"
   | "collection";
 
+type CaptureContext =
+  | {
+      mode: "practice";
+      signId: string;
+      label: string;
+    }
+  | {
+      mode: "collection";
+      signerId: string;
+      signId: string;
+      label: string;
+      takeId: number;
 
-const COUNTDOWN_MS = 1000;
+      collectionProfile:
+        CollectionProfileId;
+
+      collectionSessionId:
+        string;
+    };
+
+
 const CAPTURE_DURATION_MS = 2000;
+
+const QUICK_SIGNERS = [
+  "S001",
+  "S002",
+  "S003",
+];
 
 
 const BODY_INDICES = [
@@ -203,12 +241,8 @@ function drawResults(
   );
 
   ctx.lineWidth = 3;
-
-  ctx.strokeStyle =
-    "#69e6ff";
-
-  ctx.fillStyle =
-    "#ffffff";
+  ctx.strokeStyle = "#69e6ff";
+  ctx.fillStyle = "#ffffff";
 
   const pose =
     result.poseLandmarks;
@@ -266,34 +300,23 @@ function drawResults(
       leftShoulder &&
       rightShoulder
     ) {
-      const center = {
-        x:
-          (
-            leftShoulder.x +
-            rightShoulder.x
-          ) / 2,
-
-        y:
-          (
-            leftShoulder.y +
-            rightShoulder.y
-          ) / 2,
-      };
-
       ctx.fillStyle =
         "#ffd166";
 
       drawPoint(
         ctx,
-        center.x,
-        center.y,
+        (
+          leftShoulder.x +
+          rightShoulder.x
+        ) / 2,
+        (
+          leftShoulder.y +
+          rightShoulder.y
+        ) / 2,
         width,
         height,
         6
       );
-
-      ctx.fillStyle =
-        "#ffffff";
     }
   }
 
@@ -308,9 +331,7 @@ function drawResults(
           : "#ff9bd5";
 
       ctx.fillStyle =
-        handIndex === 0
-          ? "#7cf29a"
-          : "#ff9bd5";
+        ctx.strokeStyle;
 
       for (
         const [
@@ -353,32 +374,96 @@ function drawResults(
 }
 
 
-export function CameraView() {
-  /*
-   * =========================
-   * Refs
-   * =========================
-   */
+function normalizeSignerId(
+  value: string
+): string {
+  return value
+    .trim()
+    .toUpperCase();
+}
 
-  const videoRef =
-    useRef<HTMLVideoElement | null>(
-      null
+
+function isValidSignerId(
+  value: string
+): boolean {
+  return /^S\d{3,}$/.test(
+    normalizeSignerId(value)
+  );
+}
+
+
+function getNextMissingTake(
+  samples:
+    DatasetSampleSummary[],
+  signId: string
+): number {
+  const used =
+    new Set(
+      samples
+        .filter(
+          (sample) =>
+            sample.sign_id ===
+            signId
+        )
+        .map(
+          (sample) =>
+            sample.take_id
+        )
     );
+
+  let next = 1;
+
+  while (
+    used.has(next)
+  ) {
+    next += 1;
+  }
+
+  return next;
+}
+
+
+function formatDirection(
+  value: string
+): string {
+  if (
+    value ===
+    "self_relative"
+  ) {
+    return "自身参考";
+  }
+
+  if (
+    value ===
+    "interlocutor_relative"
+  ) {
+    return "对方参考";
+  }
+
+  return "身体参考";
+}
+
+
+export function CameraView() {
+  const videoRef =
+    useRef<
+      HTMLVideoElement | null
+    >(null);
 
   const canvasRef =
-    useRef<HTMLCanvasElement | null>(
-      null
-    );
+    useRef<
+      HTMLCanvasElement | null
+    >(null);
 
   const streamRef =
-    useRef<MediaStream | null>(
-      null
-    );
+    useRef<
+      MediaStream | null
+    >(null);
 
   const animationFrameRef =
-    useRef<number | null>(
-      null
-    );
+    useRef<
+      number | null
+    >(null);
 
   const lastVideoTimeRef =
     useRef(-1);
@@ -387,24 +472,20 @@ export function CameraView() {
     useRef(false);
 
   const capturedFramesRef =
-    useRef<LandmarkFrame[]>([]);
+    useRef<
+      LandmarkFrame[]
+    >([]);
 
-  const countdownTimerRef =
-    useRef<number | null>(
-      null
-    );
+  const countdownIntervalRef =
+    useRef<
+      number | null
+    >(null);
 
   const captureTimerRef =
-    useRef<number | null>(
-      null
-    );
+    useRef<
+      number | null
+    >(null);
 
-
-  /*
-   * =========================
-   * Camera / Vision State
-   * =========================
-   */
 
   const [
     cameraStatus,
@@ -433,6 +514,12 @@ export function CameraView() {
   const [
     errorMessage,
     setErrorMessage,
+  ] =
+    useState("");
+
+  const [
+    noticeMessage,
+    setNoticeMessage,
   ] =
     useState("");
 
@@ -479,12 +566,6 @@ export function CameraView() {
     useState(0);
 
 
-  /*
-   * =========================
-   * Work Mode State
-   * =========================
-   */
-
   const [
     workMode,
     setWorkMode,
@@ -504,7 +585,8 @@ export function CameraView() {
     setSelectedSignId,
   ] =
     useState(
-      COLLECTION_SIGNS[0].signId
+      COLLECTION_SIGNS[0]
+        .signId
     );
 
   const [
@@ -513,12 +595,78 @@ export function CameraView() {
   ] =
     useState(1);
 
+  const [
+    countdownSeconds,
+    setCountdownSeconds,
+  ] =
+    useState(2);
 
-  /*
-   * =========================
-   * API Result State
-   * =========================
-   */
+  const [
+    countdownValue,
+    setCountdownValue,
+  ] =
+    useState(0);
+
+  const [
+    autoAdvance,
+    setAutoAdvance,
+  ] =
+    useState(true);
+
+
+  const [
+    collectionProfileId,
+    setCollectionProfileId,
+  ] =
+    useState<CollectionProfileId>(
+      () => {
+        const saved =
+          localStorage.getItem(
+            "signbridge.collectionProfile"
+          );
+
+        if (
+          saved === "validation" ||
+          saved === "formal" ||
+          saved === "extended" ||
+          saved === "custom"
+        ) {
+          return saved;
+        }
+
+        return "validation";
+      }
+    );
+
+
+  const [
+    customTarget,
+    setCustomTarget,
+  ] =
+    useState(
+      () =>
+        Number(
+          localStorage.getItem(
+            "signbridge.customTarget"
+          )
+          ?? "20"
+        )
+    );
+
+
+  const [
+    collectionSessionId,
+    setCollectionSessionId,
+  ] =
+    useState(
+      () =>
+        localStorage.getItem(
+          "signbridge.collectionSessionId"
+        )
+        ??
+        "main"
+    );
+
 
   const [
     practiceResult,
@@ -536,12 +684,20 @@ export function CameraView() {
       DatasetSampleResponse | null
     >(null);
 
+  const [
+    datasetSamples,
+    setDatasetSamples,
+  ] =
+    useState<
+      DatasetSampleSummary[]
+    >([]);
 
-  /*
-   * =========================
-   * Derived Data
-   * =========================
-   */
+  const [
+    historyLoading,
+    setHistoryLoading,
+  ] =
+    useState(false);
+
 
   const selectedSign =
     COLLECTION_SIGNS.find(
@@ -551,12 +707,79 @@ export function CameraView() {
     ) ??
     COLLECTION_SIGNS[0];
 
-  const previewSampleId =
-    buildSampleId(
-      signerId || "S001",
-      selectedSign.signId,
-      takeId
+
+  const currentSignSamples =
+    datasetSamples
+      .filter(
+        (sample) =>
+          sample.sign_id ===
+          selectedSign.signId
+      )
+      .sort(
+        (a, b) =>
+          a.take_id -
+          b.take_id
+      );
+
+
+  const overallUsable =
+    datasetSamples.filter(
+      (sample) =>
+        sample.input_usable
+    ).length;
+
+  const overallRejected =
+    datasetSamples.filter(
+      (sample) =>
+        !sample.input_usable
+    ).length;
+
+  const activeProfile =
+    getCollectionProfile(
+      collectionProfileId
     );
+
+
+  const targetTakes =
+    collectionProfileId ===
+    "custom"
+      ?
+        Math.max(
+          1,
+          customTarget
+        )
+      :
+        activeProfile
+          .targetTakes;
+
+
+  const overallTarget =
+    COLLECTION_SIGNS.length
+    *
+    targetTakes;
+
+  const remainingTarget =
+    Math.max(
+      0,
+      overallTarget -
+      overallUsable
+    );
+
+
+  const previewSampleId =
+    isValidSignerId(
+      signerId
+    )
+      ?
+        buildSampleId(
+          normalizeSignerId(
+            signerId
+          ),
+          selectedSign.signId,
+          takeId
+        )
+      :
+        "Signer ID 无效";
 
 
   const liveInputReadiness =
@@ -567,11 +790,250 @@ export function CameraView() {
     );
 
 
-  /*
-   * =========================
-   * Camera Effect
-   * =========================
-   */
+  const captureBusy =
+    captureStatus ===
+      "countdown" ||
+    captureStatus ===
+      "capturing" ||
+    captureStatus ===
+      "processing";
+
+
+  async function refreshDatasetHistory(
+    targetSigner:
+      string = signerId
+  ): Promise<
+    DatasetSampleSummary[]
+  > {
+    const normalized =
+      normalizeSignerId(
+        targetSigner
+      );
+
+    if (
+      !isValidSignerId(
+        normalized
+      )
+    ) {
+      setDatasetSamples(
+        []
+      );
+
+      return [];
+    }
+
+    try {
+      setHistoryLoading(
+        true
+      );
+
+      const response =
+        await fetchDatasetSamples(
+          normalized
+        );
+
+      setDatasetSamples(
+        response.samples
+      );
+
+      return (
+        response.samples
+      );
+    }
+    catch (error) {
+      console.error(
+        "Dataset history failed:",
+        error
+      );
+
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          :
+            "无法读取采集历史。"
+      );
+
+      return [];
+    }
+    finally {
+      setHistoryLoading(
+        false
+      );
+    }
+  }
+
+
+  function findNextIncompleteSign(
+    samples:
+      DatasetSampleSummary[],
+    currentSignId:
+      string
+  ): string | null {
+    const currentIndex =
+      COLLECTION_SIGNS
+        .findIndex(
+          (sign) =>
+            sign.signId ===
+            currentSignId
+        );
+
+    for (
+      let offset = 1;
+      offset <=
+        COLLECTION_SIGNS.length;
+      offset += 1
+    ) {
+      const index =
+        (
+          currentIndex +
+          offset
+        )
+        %
+        COLLECTION_SIGNS.length;
+
+      const sign =
+        COLLECTION_SIGNS[
+          index
+        ];
+
+      const usable =
+        samples.filter(
+          (sample) =>
+            sample.sign_id ===
+              sign.signId &&
+            sample.input_usable
+        ).length;
+
+      if (
+        usable <
+        targetTakes
+      ) {
+        return sign.signId;
+      }
+    }
+
+    return null;
+  }
+
+
+  function goToNextIncompleteSign() {
+    const next =
+      findNextIncompleteSign(
+        datasetSamples,
+        selectedSign.signId
+      );
+
+    if (!next) {
+      setNoticeMessage(
+        "当前采集者 15 个词均已达到目标。"
+      );
+
+      return;
+    }
+
+    setSelectedSignId(
+      next
+    );
+  }
+
+
+  async function handleDeleteSample(
+    sample:
+      DatasetSampleSummary
+  ) {
+    const confirmed =
+      window.confirm(
+        `确定删除 ${sample.sample_id} 吗？\n\n`
+        +
+        "JSON 文件和 manifest 记录都会删除。"
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setErrorMessage("");
+      setNoticeMessage("");
+
+      await deleteDatasetSample(
+        sample.sample_id
+      );
+
+      await refreshDatasetHistory(
+        signerId
+      );
+
+      setNoticeMessage(
+        `已删除 ${sample.sample_id}。`
+        +
+        ` 下一次将自动补最小缺失 Take。`
+      );
+    }
+    catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          :
+            "删除样本失败。"
+      );
+    }
+  }
+
+
+  useEffect(() => {
+    if (
+      workMode !==
+      "collection"
+    ) {
+      return;
+    }
+
+    void refreshDatasetHistory(
+      signerId
+    );
+  }, [
+    workMode,
+    signerId,
+  ]);
+
+
+  useEffect(() => {
+    localStorage.setItem(
+      "signbridge.collectionProfile",
+      collectionProfileId
+    );
+
+    localStorage.setItem(
+      "signbridge.customTarget",
+      String(
+        customTarget
+      )
+    );
+
+    localStorage.setItem(
+      "signbridge.collectionSessionId",
+      collectionSessionId
+    );
+  }, [
+    collectionProfileId,
+    customTarget,
+    collectionSessionId,
+  ]);
+
+
+  useEffect(() => {
+    setTakeId(
+      getNextMissingTake(
+        datasetSamples,
+        selectedSignId
+      )
+    );
+  }, [
+    datasetSamples,
+    selectedSignId,
+  ]);
+
 
   useEffect(() => {
     let cancelled = false;
@@ -625,7 +1087,7 @@ export function CameraView() {
 
         if (!video) {
           throw new Error(
-            "Video element not available."
+            "Video element unavailable."
           );
         }
 
@@ -637,38 +1099,23 @@ export function CameraView() {
         setCameraStatus(
           "ready"
         );
-      } catch (error) {
+      }
+      catch (error) {
         console.error(
-          "Camera initialization failed:",
           error
         );
 
-        if (
-          error instanceof
-            DOMException &&
-          error.name ===
-            "NotAllowedError"
-        ) {
-          setCameraStatus(
-            "permission-denied"
-          );
+        setCameraStatus(
+          "error"
+        );
 
-          setErrorMessage(
-            "摄像头权限被拒绝，请允许浏览器访问摄像头。"
-          );
-        } else {
-          setCameraStatus(
-            "error"
-          );
-
-          setErrorMessage(
-            "无法打开摄像头，请检查摄像头是否被其他程序占用。"
-          );
-        }
+        setErrorMessage(
+          "摄像头启动失败，请检查浏览器权限。"
+        );
       }
     }
 
-    startCamera();
+    void startCamera();
 
     return () => {
       cancelled = true;
@@ -682,12 +1129,6 @@ export function CameraView() {
     };
   }, []);
 
-
-  /*
-   * =========================
-   * MediaPipe Effect
-   * =========================
-   */
 
   useEffect(() => {
     if (
@@ -716,9 +1157,9 @@ export function CameraView() {
         );
 
         runDetectionLoop();
-      } catch (error) {
+      }
+      catch (error) {
         console.error(
-          "MediaPipe initialization failed:",
           error
         );
 
@@ -727,10 +1168,11 @@ export function CameraView() {
         );
 
         setErrorMessage(
-          "MediaPipe 初始化失败，请检查网络或浏览器 Console。"
+          "MediaPipe 初始化失败。"
         );
       }
     }
+
 
     function runDetectionLoop() {
       if (cancelled) {
@@ -759,21 +1201,11 @@ export function CameraView() {
             video.videoWidth > 0 &&
             video.videoHeight > 0
           ) {
-            if (
-              canvas.width !==
-              video.videoWidth
-            ) {
-              canvas.width =
-                video.videoWidth;
-            }
+            canvas.width =
+              video.videoWidth;
 
-            if (
-              canvas.height !==
-              video.videoHeight
-            ) {
-              canvas.height =
-                video.videoHeight;
-            }
+            canvas.height =
+              video.videoHeight;
           }
 
           try {
@@ -834,9 +1266,10 @@ export function CameraView() {
                   .length
               );
             }
-          } catch (error) {
+          }
+          catch (error) {
             console.error(
-              "MediaPipe frame detection failed:",
+              "Detection failed:",
               error
             );
           }
@@ -849,7 +1282,7 @@ export function CameraView() {
         );
     }
 
-    startVision();
+    void startVision();
 
     return () => {
       cancelled = true;
@@ -862,28 +1295,21 @@ export function CameraView() {
           animationFrameRef
             .current
         );
-
-        animationFrameRef
-          .current = null;
       }
     };
-  }, [cameraStatus]);
+  }, [
+    cameraStatus,
+  ]);
 
-
-  /*
-   * =========================
-   * Timer Cleanup
-   * =========================
-   */
 
   useEffect(() => {
     return () => {
       if (
-        countdownTimerRef
+        countdownIntervalRef
           .current !== null
       ) {
-        window.clearTimeout(
-          countdownTimerRef
+        window.clearInterval(
+          countdownIntervalRef
             .current
         );
       }
@@ -901,15 +1327,11 @@ export function CameraView() {
   }, []);
 
 
-  /*
-   * =========================
-   * Process Finished Capture
-   * =========================
-   */
-
   async function processCapture(
-    frames: LandmarkFrame[],
-    modeAtCapture: WorkMode
+    frames:
+      LandmarkFrame[],
+    context:
+      CaptureContext
   ) {
     try {
       setCaptureStatus(
@@ -917,12 +1339,13 @@ export function CameraView() {
       );
 
       setErrorMessage("");
+      setNoticeMessage("");
 
       if (
-        frames.length < 10
+        frames.length < 2
       ) {
         throw new Error(
-          `采集帧数过少：${frames.length}`
+          "采集帧数过少，请重新采集。"
         );
       }
 
@@ -940,51 +1363,18 @@ export function CameraView() {
         durationMs / 1000
       );
 
-      console.log(
-        "===== SignBridge Capture ====="
-      );
-
-      console.log(
-        "Mode:",
-        modeAtCapture
-      );
-
-      console.log(
-        "Raw frames:",
-        frames.length
-      );
-
-      console.log(
-        "Model shape:",
-        `[${processed.modelInput.length}, ${processed.modelInput[0]?.length}, ${processed.modelInput[0]?.[0]?.length}]`
-      );
-
-
-      /*
-       * =====================
-       * PRACTICE MODE
-       * =====================
-       */
 
       if (
-        modeAtCapture ===
+        context.mode ===
         "practice"
       ) {
-        setPracticeResult(
-          null
-        );
-
-        setDatasetResult(
-          null
-        );
-
         const response =
           await submitPractice({
             request_id:
               `practice_${Date.now()}`,
 
             target_sign_id:
-              selectedSign.signId,
+              context.signId,
 
             raw_frame_count:
               frames.length,
@@ -1010,62 +1400,34 @@ export function CameraView() {
       }
 
 
-      /*
-       * =====================
-       * COLLECTION MODE
-       * =====================
-       */
+      const sign =
+        COLLECTION_SIGNS.find(
+          (item) =>
+            item.signId ===
+            context.signId
+        );
 
-      const normalizedSigner =
-        signerId
-          .trim()
-          .toUpperCase();
-
-      if (
-        !/^S\d{3,}$/.test(
-          normalizedSigner
-        )
-      ) {
+      if (!sign) {
         throw new Error(
-          "Signer ID 格式错误，请使用 S001、S002 等格式。"
+          "Unknown sign ID."
         );
       }
 
-      const sampleId =
-        buildSampleId(
-          normalizedSigner,
-          selectedSign.signId,
-          takeId
-        );
 
       const quality =
         calculateDatasetQuality(
           frames,
-          selectedSign
+          sign
         );
 
-      const rawFrames =
-        toDatasetRawFrames(
-          frames
+
+      const sampleId =
+        buildSampleId(
+          context.signerId,
+          context.signId,
+          context.takeId
         );
 
-      console.log(
-        "Sample ID:",
-        sampleId
-      );
-
-      console.log(
-        "Dataset quality:",
-        quality
-      );
-
-      setPracticeResult(
-        null
-      );
-
-      setDatasetResult(
-        null
-      );
 
       const response =
         await saveDatasetSample({
@@ -1076,16 +1438,22 @@ export function CameraView() {
             sampleId,
 
           signer_id:
-            normalizedSigner,
+            context.signerId,
 
           sign_id:
-            selectedSign.signId,
+            context.signId,
 
           take_id:
-            takeId,
+            context.takeId,
 
           label:
-            selectedSign.label,
+            context.label,
+
+          collection_profile:
+            context.collectionProfile,
+
+          collection_session_id:
+            context.collectionSessionId,
 
           capture: {
             duration_ms:
@@ -1120,36 +1488,81 @@ export function CameraView() {
                 .bothHandsUsableRatio,
 
             active_hand:
-              quality
-                .activeHand,
+              quality.activeHand,
           },
 
           raw_frames:
-            rawFrames,
+            toDatasetRawFrames(
+              frames
+            ),
 
           model_input:
             processed.modelInput,
         });
 
+
       setDatasetResult(
         response
       );
 
-      /*
-       * 保存成功以后，
-       * 自动进入下一 Take。
-       */
-      setTakeId(
-        (current) =>
-          current + 1
-      );
+
+      const samples =
+        await refreshDatasetHistory(
+          context.signerId
+        );
+
+
+      if (
+        quality.inputUsable
+      ) {
+        setNoticeMessage(
+          `✓ ${sampleId} 保存成功。`
+        );
+      }
+      else {
+        setNoticeMessage(
+          `⚠ ${sampleId} 已保存，但质量未通过，请在下方删除后重采。`
+        );
+      }
+
+
+      if (
+        autoAdvance &&
+        quality.inputUsable
+      ) {
+        const usableForSign =
+          samples.filter(
+            (sample) =>
+              sample.sign_id ===
+                context.signId &&
+              sample.input_usable
+          ).length;
+
+        if (
+          usableForSign >=
+          targetTakes
+        ) {
+          const next =
+            findNextIncompleteSign(
+              samples,
+              context.signId
+            );
+
+          if (next) {
+            setSelectedSignId(
+              next
+            );
+          }
+        }
+      }
+
 
       setCaptureStatus(
         "done"
       );
-    } catch (error) {
+    }
+    catch (error) {
       console.error(
-        "Capture processing failed:",
         error
       );
 
@@ -1159,54 +1572,86 @@ export function CameraView() {
 
       setErrorMessage(
         error instanceof Error
-          ? error.message
-          : "动作处理失败。"
+          ?
+            error.message
+          :
+            "动作处理失败。"
       );
     }
   }
 
-
-  /*
-   * =========================
-   * Start Capture
-   * =========================
-   */
 
   function startCapture() {
     if (
       cameraStatus !==
         "ready" ||
       visionStatus !==
-        "ready"
+        "ready" ||
+      captureBusy ||
+      historyLoading
     ) {
       return;
     }
 
-    if (
-      captureStatus ===
-        "countdown" ||
-      captureStatus ===
-        "capturing" ||
-      captureStatus ===
-        "processing"
-    ) {
-      return;
-    }
 
-    if (
+    const context:
+      CaptureContext =
       workMode ===
+      "collection"
+        ?
+          {
+            mode:
+              "collection",
+
+            signerId:
+              normalizeSignerId(
+                signerId
+              ),
+
+            signId:
+              selectedSign.signId,
+
+            label:
+              selectedSign.label,
+
+            takeId,
+
+            collectionProfile:
+              collectionProfileId,
+
+            collectionSessionId:
+              collectionSessionId
+                .trim()
+                ||
+                "main",
+          }
+        :
+          {
+            mode:
+              "practice",
+
+            signId:
+              selectedSign.signId,
+
+            label:
+              selectedSign.label,
+          };
+
+
+    if (
+      context.mode ===
         "collection" &&
-      !signerId.trim()
+      !isValidSignerId(
+        context.signerId
+      )
     ) {
       setErrorMessage(
-        "请先填写 Signer ID。"
+        "Signer ID 格式错误，例如 S001。"
       );
 
       return;
     }
 
-    const modeAtCapture =
-      workMode;
 
     capturedFramesRef.current =
       [];
@@ -1231,16 +1676,57 @@ export function CameraView() {
     );
 
     setErrorMessage("");
+    setNoticeMessage("");
 
     setCaptureStatus(
       "countdown"
     );
 
-    countdownTimerRef.current =
-      window.setTimeout(
+
+    let remaining =
+      countdownSeconds;
+
+    setCountdownValue(
+      remaining
+    );
+
+
+    countdownIntervalRef.current =
+      window.setInterval(
         () => {
-          capturedFramesRef
-            .current = [];
+          remaining -= 1;
+
+          if (
+            remaining > 0
+          ) {
+            setCountdownValue(
+              remaining
+            );
+
+            return;
+          }
+
+
+          if (
+            countdownIntervalRef
+              .current !== null
+          ) {
+            window.clearInterval(
+              countdownIntervalRef
+                .current
+            );
+
+            countdownIntervalRef
+              .current = null;
+          }
+
+
+          setCountdownValue(
+            0
+          );
+
+          capturedFramesRef.current =
+            [];
 
           setCapturedFrameCount(
             0
@@ -1253,11 +1739,11 @@ export function CameraView() {
             "capturing"
           );
 
+
           captureTimerRef.current =
             window.setTimeout(
               () => {
-                isCapturingRef
-                  .current =
+                isCapturingRef.current =
                   false;
 
                 const frames = [
@@ -1267,7 +1753,7 @@ export function CameraView() {
 
                 void processCapture(
                   frames,
-                  modeAtCapture
+                  context
                 );
               },
 
@@ -1275,28 +1761,71 @@ export function CameraView() {
             );
         },
 
-        COUNTDOWN_MS
+        1000
       );
   }
 
 
-  /*
-   * =========================
-   * Mode Change
-   * =========================
-   */
+  useEffect(() => {
+    function handleKeyDown(
+      event:
+        KeyboardEvent
+    ) {
+      if (
+        workMode !==
+        "collection"
+      ) {
+        return;
+      }
+
+      if (
+        event.code !==
+        "Space"
+      ) {
+        return;
+      }
+
+      const target =
+        event.target as HTMLElement | null;
+
+      const tag =
+        target
+          ?.tagName
+          ?.toUpperCase();
+
+      if (
+        tag === "INPUT" ||
+        tag === "SELECT" ||
+        tag === "TEXTAREA" ||
+        tag === "BUTTON"
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+
+      startCapture();
+    }
+
+    window.addEventListener(
+      "keydown",
+      handleKeyDown
+    );
+
+    return () => {
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown
+      );
+    };
+  });
+
 
   function changeMode(
-    nextMode: WorkMode
+    nextMode:
+      WorkMode
   ) {
-    if (
-      captureStatus ===
-        "countdown" ||
-      captureStatus ===
-        "capturing" ||
-      captureStatus ===
-        "processing"
-    ) {
+    if (captureBusy) {
       return;
     }
 
@@ -1313,6 +1842,7 @@ export function CameraView() {
     );
 
     setErrorMessage("");
+    setNoticeMessage("");
 
     setCaptureStatus(
       "idle"
@@ -1320,82 +1850,76 @@ export function CameraView() {
   }
 
 
-  /*
-   * =========================
-   * Labels
-   * =========================
-   */
-
   const cameraLabel =
     cameraStatus ===
-    "initializing"
-      ? "正在初始化"
-      : cameraStatus ===
-          "ready"
-        ? "摄像头已就绪"
-        : cameraStatus ===
-            "permission-denied"
-          ? "权限被拒绝"
-          : "摄像头异常";
+    "ready"
+      ?
+        "摄像头已就绪"
+      :
+        cameraStatus ===
+        "initializing"
+          ?
+            "正在初始化"
+          :
+            "摄像头异常";
 
 
   const visionLabel =
     visionStatus ===
-    "idle"
-      ? "等待摄像头"
-      : visionStatus ===
-          "loading"
-        ? "正在加载 MediaPipe"
-        : visionStatus ===
-            "ready"
-          ? "MediaPipe 已就绪"
-          : "MediaPipe 异常";
+    "ready"
+      ?
+        "MediaPipe 已就绪"
+      :
+        visionStatus ===
+        "loading"
+          ?
+            "正在加载 MediaPipe"
+          :
+            "等待 MediaPipe";
 
 
   const captureLabel =
     captureStatus ===
     "idle"
-      ? "准备就绪"
-      : captureStatus ===
-          "countdown"
-        ? "1 秒后开始"
-        : captureStatus ===
+      ?
+        "准备就绪"
+      :
+        captureStatus ===
+        "countdown"
+          ?
+            "准备动作"
+          :
+            captureStatus ===
             "capturing"
-          ? "正在采集"
-          : captureStatus ===
-              "processing"
-            ? "正在处理 / 保存"
-            : captureStatus ===
-                "done"
-              ? "完成"
-              : "失败";
+              ?
+                "正在采集"
+              :
+                captureStatus ===
+                "processing"
+                  ?
+                    "处理中"
+                  :
+                    captureStatus ===
+                    "done"
+                      ?
+                        "完成"
+                      :
+                        "失败";
 
-
-  const captureBusy =
-    captureStatus ===
-      "countdown" ||
-    captureStatus ===
-      "capturing" ||
-    captureStatus ===
-      "processing";
-
-
-  /*
-   * =========================
-   * JSX
-   * =========================
-   */
 
   return (
     <section className="camera-panel">
+
       <div className="mode-switch">
         <button
           type="button"
           className={
             workMode ===
             "practice"
-              ? "mode-button mode-button-active"
-              : "mode-button"
+              ?
+                "mode-button mode-button-active"
+              :
+                "mode-button"
           }
           onClick={() =>
             changeMode(
@@ -1414,8 +1938,10 @@ export function CameraView() {
           className={
             workMode ===
             "collection"
-              ? "mode-button mode-button-active"
-              : "mode-button"
+              ?
+                "mode-button mode-button-active"
+              :
+                "mode-button"
           }
           onClick={() =>
             changeMode(
@@ -1426,182 +1952,524 @@ export function CameraView() {
             captureBusy
           }
         >
-          数据采集模式
+          数据采集工作台
         </button>
       </div>
 
 
       {workMode ===
         "collection" && (
-        <div className="collection-panel">
-          <div className="collection-field">
-            <label
-              htmlFor="signer-id"
-            >
-              Signer ID
-            </label>
+        <>
+          <div className="collection-profile-panel">
 
-            <input
-              id="signer-id"
-              value={signerId}
-              onChange={(
-                event
-              ) =>
-                setSignerId(
-                  event.target
-                    .value
+            <div className="collection-profile-heading">
+              <div>
+                <strong>
+                  采集计划
+                </strong>
+
+                <span>
+                  切换计划不会删除已有数据，
+                  只改变当前目标数量。
+                </span>
+              </div>
+
+              <strong>
+                {
+                  activeProfile.name
+                }
+                {" · "}
+                {targetTakes}
+                {" 次 / 人 / 词"}
+              </strong>
+            </div>
+
+
+            <div className="collection-profile-options">
+
+              {COLLECTION_PROFILES.map(
+                (profile) => (
+                  <button
+                    key={
+                      profile.id
+                    }
+                    type="button"
+                    disabled={
+                      captureBusy
+                    }
+                    className={
+                      collectionProfileId ===
+                      profile.id
+                        ?
+                          "collection-profile-option collection-profile-option-active"
+                        :
+                          "collection-profile-option"
+                    }
+                    onClick={() =>
+                      setCollectionProfileId(
+                        profile.id
+                      )
+                    }
+                  >
+                    <strong>
+                      {
+                        profile.name
+                      }
+                    </strong>
+
+                    <span>
+                      {
+                        profile.id ===
+                        "custom"
+                          ?
+                            "自定义目标"
+                          :
+                            `${profile.targetTakes} 次 / 词`
+                      }
+                    </span>
+                  </button>
                 )
-              }
-              disabled={
-                captureBusy
-              }
-              placeholder="S001"
-            />
+              )}
 
-            <small>
-              每位采集者使用固定编号，例如 S001、S002。
-            </small>
+            </div>
+
+
+            {collectionProfileId ===
+              "custom" && (
+              <div className="custom-target-field">
+                <label>
+                  自定义目标次数
+                </label>
+
+                <input
+                  type="number"
+                  min={1}
+                  max={500}
+                  value={
+                    customTarget
+                  }
+                  disabled={
+                    captureBusy
+                  }
+                  onChange={(
+                    event
+                  ) =>
+                    setCustomTarget(
+                      Math.max(
+                        1,
+                        Number(
+                          event
+                            .target
+                            .value
+                        )
+                        ||
+                        1
+                      )
+                    )
+                  }
+                />
+              </div>
+            )}
+
+
+            <div className="collection-session-field">
+              <label>
+                Session
+              </label>
+
+              <input
+                value={
+                  collectionSessionId
+                }
+                disabled={
+                  captureBusy
+                }
+                onChange={(
+                  event
+                ) =>
+                  setCollectionSessionId(
+                    event
+                      .target
+                      .value
+                  )
+                }
+                placeholder="main"
+              />
+
+              <small>
+                用于标记采集批次，例如
+                roomA、morning、camera2。
+              </small>
+            </div>
+
           </div>
 
 
-          <div className="collection-field">
-            <label
-              htmlFor="sign-select"
-            >
-              Sign
-            </label>
+          <div className="collector-toolbar">
 
-            <select
-              id="sign-select"
-              value={
-                selectedSignId
-              }
-              disabled={
-                captureBusy
-              }
-              onChange={(
-                event
-              ) => {
-                setSelectedSignId(
-                  event.target
-                    .value
-                );
+            <div className="collector-field">
+              <label>
+                Signer ID
+              </label>
 
-                /*
-                 * 换词后从 Take 1
-                 * 重新开始。
-                 */
-                setTakeId(1);
+              <input
+                value={
+                  signerId
+                }
+                disabled={
+                  captureBusy
+                }
+                onChange={(
+                  event
+                ) =>
+                  setSignerId(
+                    event
+                      .target
+                      .value
+                      .toUpperCase()
+                  )
+                }
+              />
+            </div>
 
-                setDatasetResult(
-                  null
-                );
 
-                setErrorMessage(
-                  ""
-                );
-              }}
-            >
-              {COLLECTION_SIGNS.map(
-                (sign) => (
-                  <option
+            <div className="quick-signers">
+              {QUICK_SIGNERS.map(
+                (id) => (
+                  <button
+                    type="button"
+                    key={id}
+                    disabled={
+                      captureBusy
+                    }
+                    className={
+                      normalizeSignerId(
+                        signerId
+                      ) === id
+                        ?
+                          "quick-signer quick-signer-active"
+                        :
+                          "quick-signer"
+                    }
+                    onClick={() =>
+                      setSignerId(
+                        id
+                      )
+                    }
+                  >
+                    {id}
+                  </button>
+                )
+              )}
+            </div>
+
+
+            <div className="collector-options">
+
+              <label>
+                倒计时
+              </label>
+
+              <div className="countdown-options">
+                {[1, 2, 3].map(
+                  (seconds) => (
+                    <button
+                      key={
+                        seconds
+                      }
+                      type="button"
+                      disabled={
+                        captureBusy
+                      }
+                      className={
+                        countdownSeconds ===
+                        seconds
+                          ?
+                            "countdown-option countdown-option-active"
+                          :
+                            "countdown-option"
+                      }
+                      onClick={() =>
+                        setCountdownSeconds(
+                          seconds
+                        )
+                      }
+                    >
+                      {seconds}s
+                    </button>
+                  )
+                )}
+              </div>
+
+
+              <label className="auto-advance-option">
+                <input
+                  type="checkbox"
+                  checked={
+                    autoAdvance
+                  }
+                  disabled={
+                    captureBusy
+                  }
+                  onChange={(
+                    event
+                  ) =>
+                    setAutoAdvance(
+                      event
+                        .target
+                        .checked
+                    )
+                  }
+                />
+
+                达标后自动下一个词
+              </label>
+
+            </div>
+
+          </div>
+
+
+          <CollectorProfileCard
+            signerId={
+              signerId
+            }
+            disabled={
+              captureBusy
+            }
+          />
+
+
+          <div className="collection-summary">
+
+            <div>
+              <span>
+                有效进度
+              </span>
+
+              <strong>
+                {overallUsable}
+                {" / "}
+                {overallTarget}
+              </strong>
+            </div>
+
+            <div>
+              <span>
+                已保存
+              </span>
+
+              <strong>
+                {
+                  datasetSamples
+                    .length
+                }
+              </strong>
+            </div>
+
+            <div>
+              <span>
+                需重采
+              </span>
+
+              <strong
+                className={
+                  overallRejected >
+                  0
+                    ?
+                      "danger-text"
+                    :
+                      ""
+                }
+              >
+                {overallRejected}
+              </strong>
+            </div>
+
+            <div>
+              <span>
+                剩余
+              </span>
+
+              <strong>
+                {remainingTarget}
+              </strong>
+            </div>
+
+          </div>
+
+
+          <div className="sign-progress-grid">
+
+            {COLLECTION_SIGNS.map(
+              (sign) => {
+                const samples =
+                  datasetSamples.filter(
+                    (sample) =>
+                      sample.sign_id ===
+                      sign.signId
+                  );
+
+                const usable =
+                  samples.filter(
+                    (sample) =>
+                      sample.input_usable
+                  ).length;
+
+                const bad =
+                  samples.length -
+                  usable;
+
+                return (
+                  <button
                     key={
                       sign.signId
                     }
-                    value={
-                      sign.signId
+                    type="button"
+                    disabled={
+                      captureBusy
+                    }
+                    className={
+                      sign.signId ===
+                      selectedSign.signId
+                        ?
+                          "sign-progress-card sign-progress-card-active"
+                        :
+                          "sign-progress-card"
+                    }
+                    onClick={() =>
+                      setSelectedSignId(
+                        sign.signId
+                      )
                     }
                   >
-                    {sign.classId}
-                    {" · "}
-                    {sign.label}
-                    {" · "}
-                    {sign.signId}
-                  </option>
-                )
-              )}
-            </select>
+                    <span>
+                      {sign.label}
+                    </span>
 
-            <small>
-              Class：
-              {selectedSign.classId}
-            </small>
+                    <strong>
+                      {usable}
+                      {" / "}
+                      {
+                        targetTakes
+                      }
+                    </strong>
+
+                    {bad > 0 && (
+                      <small className="danger-text">
+                        ⚠ {bad}
+                      </small>
+                    )}
+                  </button>
+                );
+              }
+            )}
+
           </div>
 
 
-          <div className="collection-field">
-            <label
-              htmlFor="take-id"
-            >
-              Take
-            </label>
+          <div className="target-action-card">
 
-            <input
-              id="take-id"
-              type="number"
-              min={1}
-              value={takeId}
+            <div>
+              <span>
+                当前目标
+              </span>
+
+              <h2>
+                {
+                  selectedSign.label
+                }
+              </h2>
+
+              <code>
+                {
+                  selectedSign.signId
+                }
+              </code>
+            </div>
+
+
+            <div className="target-action-meta">
+
+              <span>
+                Class {
+                  selectedSign.classId
+                }
+              </span>
+
+              <span>
+                {
+                  selectedSign
+                    .handednessPolicy ===
+                  "both_hands"
+                    ?
+                      "双手动作"
+                    :
+                      "单手 / 优势手"
+                }
+              </span>
+
+              <span>
+                {formatDirection(
+                  selectedSign
+                    .directionReference
+                )}
+              </span>
+
+              {selectedSign
+                .directionSensitive && (
+                <span className="warning-pill">
+                  方向敏感
+                </span>
+              )}
+
+            </div>
+
+
+            <div className="take-preview">
+
+              <span>
+                Next Take
+              </span>
+
+              <strong>
+                {takeId}
+              </strong>
+
+              <code>
+                {previewSampleId}
+              </code>
+
+            </div>
+
+
+            <button
+              type="button"
+              className="secondary-button"
               disabled={
                 captureBusy
               }
-              onChange={(
-                event
-              ) => {
-                const value =
-                  Number(
-                    event.target
-                      .value
-                  );
+              onClick={
+                goToNextIncompleteSign
+              }
+            >
+              下一个未完成词
+            </button>
 
-                setTakeId(
-                  Number.isFinite(
-                    value
-                  )
-                    ?
-                      Math.max(
-                        1,
-                        Math.floor(
-                          value
-                        )
-                      )
-                    : 1
-                );
-              }}
-            />
-
-            <small>
-              保存成功后自动 +1
-            </small>
           </div>
-
-
-          <div className="sample-preview">
-            <span>
-              Sample ID
-            </span>
-
-            <code>
-              {previewSampleId}
-            </code>
-          </div>
-        </div>
+        </>
       )}
 
 
       {workMode ===
         "practice" && (
         <div className="practice-target">
-          <span>
-            当前练习词
-          </span>
 
           <strong>
-            {selectedSign.label}
+            {
+              selectedSign.label
+            }
           </strong>
-
-          <code>
-            {selectedSign.signId}
-          </code>
 
           <select
             value={
@@ -1614,50 +2482,61 @@ export function CameraView() {
               event
             ) =>
               setSelectedSignId(
-                event.target
+                event
+                  .target
                   .value
               )
             }
           >
-            {COLLECTION_SIGNS.map(
-              (sign) => (
-                <option
-                  key={
-                    sign.signId
-                  }
-                  value={
-                    sign.signId
-                  }
-                >
-                  {sign.label}
-                  {" · "}
-                  {sign.signId}
-                </option>
+            {
+              COLLECTION_SIGNS.map(
+                (sign) => (
+                  <option
+                    key={
+                      sign.signId
+                    }
+                    value={
+                      sign.signId
+                    }
+                  >
+                    {
+                      sign.label
+                    }
+                    {" · "}
+                    {
+                      sign.signId
+                    }
+                  </option>
+                )
               )
-            )}
+            }
           </select>
+
         </div>
       )}
 
 
       <div className="camera-header">
+
         <div>
           <h2>
-            {workMode ===
-            "collection"
-              ? "训练数据采集"
-              : "实时练习画面"}
+            {
+              workMode ===
+              "collection"
+                ?
+                  "训练数据采集"
+                :
+                  "实时练习画面"
+            }
           </h2>
 
           <p>
-            请保持上半身和手部完整进入画面
+            请保持上半身及动作区域进入画面
           </p>
         </div>
 
         <div className="status-stack">
-          <span
-            className={`status status-${cameraStatus}`}
-          >
+          <span className="status">
             {cameraLabel}
           </span>
 
@@ -1665,12 +2544,16 @@ export function CameraView() {
             {visionLabel}
           </span>
         </div>
+
       </div>
 
 
       <div className="video-shell">
+
         <video
-          ref={videoRef}
+          ref={
+            videoRef
+          }
           className="camera-video"
           autoPlay
           muted
@@ -1678,7 +2561,9 @@ export function CameraView() {
         />
 
         <canvas
-          ref={canvasRef}
+          ref={
+            canvasRef
+          }
           className="landmark-canvas"
         />
 
@@ -1686,7 +2571,7 @@ export function CameraView() {
         {captureStatus ===
           "countdown" && (
           <div className="capture-overlay">
-            1
+            {countdownValue}
           </div>
         )}
 
@@ -1705,22 +2590,33 @@ export function CameraView() {
             处理中
           </div>
         )}
+
       </div>
 
 
       <div className="vision-metrics">
+
         <div className="vision-metric">
-          <span>Pose</span>
+          <span>
+            Pose
+          </span>
 
           <strong>
-            {poseDetected
-              ? "Detected"
-              : "Not detected"}
+            {
+              poseDetected
+                ?
+                  "Detected"
+                :
+                  "Not detected"
+            }
           </strong>
         </div>
 
+
         <div className="vision-metric">
-          <span>Hands</span>
+          <span>
+            Hands
+          </span>
 
           <strong>
             {handsDetected}
@@ -1728,21 +2624,26 @@ export function CameraView() {
           </strong>
         </div>
 
+
         <div className="vision-metric">
           <span>
             Handedness
           </span>
 
           <strong>
-            {handedness.length >
-            0
-              ?
-                handedness.join(
-                  " / "
-                )
-              : "—"}
+            {
+              handedness.length >
+              0
+                ?
+                  handedness.join(
+                    " / "
+                  )
+                :
+                  "—"
+            }
           </strong>
         </div>
+
 
         <div className="vision-metric">
           <span>
@@ -1761,10 +2662,71 @@ export function CameraView() {
             %
           </strong>
         </div>
+
+
+        <div className="vision-metric">
+          <span>
+            Required Input
+          </span>
+
+          <strong
+            className={
+              liveInputReadiness.ready
+                ?
+                  "ready-text"
+                :
+                  "danger-text"
+            }
+          >
+            {
+              liveInputReadiness.ready
+                ?
+                  "Ready ✓"
+                :
+                  "Warning"
+            }
+          </strong>
+        </div>
+
       </div>
 
 
+      {workMode ===
+        "collection" && (
+        <div
+          className={
+            liveInputReadiness.ready
+              ?
+                "capture-advisory capture-advisory-ready"
+              :
+                "capture-advisory capture-advisory-warning"
+          }
+        >
+          <strong>
+            {
+              liveInputReadiness.ready
+                ?
+                  "当前姿态满足推荐条件"
+                :
+                  "⚠ 当前姿态尚未满足推荐条件"
+            }
+          </strong>
+
+          <span>
+            {
+              liveInputReadiness.ready
+                ?
+                  "可以直接开始采集。"
+                :
+                  "这不会阻止采集。你可以先点击采集，再利用倒计时把身体和手摆入画面；最终质量不合格的样本会被标红。"
+            }
+          </span>
+        </div>
+      )}
+
+
       <div className="capture-controls">
+
         <div>
           <span className="capture-label">
             Status
@@ -1781,7 +2743,9 @@ export function CameraView() {
           </span>
 
           <strong>
-            {capturedFrameCount}
+            {
+              capturedFrameCount
+            }
           </strong>
         </div>
 
@@ -1791,18 +2755,22 @@ export function CameraView() {
           </span>
 
           <strong>
-            {lastCaptureDuration >
-            0
-              ?
-                `${lastCaptureDuration.toFixed(
-                  2
-                )} s`
-              : "—"}
+            {
+              lastCaptureDuration >
+              0
+                ?
+                  `${lastCaptureDuration.toFixed(
+                    2
+                  )} s`
+                :
+                  "—"
+            }
           </strong>
         </div>
 
+
         <button
-          className="primary-button"
+          className="primary-button collection-capture-button"
           onClick={
             startCapture
           }
@@ -1810,24 +2778,46 @@ export function CameraView() {
             visionStatus !==
               "ready" ||
             captureBusy ||
+            historyLoading ||
             (
               workMode ===
                 "collection" &&
-              !liveInputReadiness
-                .ready
+              !isValidSignerId(
+                signerId
+              )
             )
           }
         >
-          {captureBusy
-            ? captureLabel
-            : workMode ===
-                "collection"
+          {
+            captureBusy
               ?
-                "采集并保存样本"
+                captureLabel
               :
-                "开始练习"}
+                workMode ===
+                "collection"
+                  ?
+                    "开始采集"
+                  :
+                    "开始练习"
+          }
         </button>
+
       </div>
+
+
+      {workMode ===
+        "collection" && (
+        <div className="shortcut-hint">
+          空格键也可以开始采集
+        </div>
+      )}
+
+
+      {noticeMessage && (
+        <div className="collection-notice">
+          {noticeMessage}
+        </div>
+      )}
 
 
       {practiceResult && (
@@ -1842,24 +2832,6 @@ export function CameraView() {
               practiceResult.status
             }
           </p>
-
-          <p>
-            Mode：
-            {
-              practiceResult.mode
-            }
-          </p>
-
-          <p>
-            Shape：
-            {
-              practiceResult
-                .received_shape
-                .join(
-                  " × "
-                )
-            }
-          </p>
         </div>
       )}
 
@@ -1867,36 +2839,13 @@ export function CameraView() {
       {datasetResult && (
         <div className="dataset-result">
           <strong>
-            数据集样本保存成功
+            最近保存
           </strong>
 
           <p>
-            Sample：
             {
               datasetResult.sample_id
             }
-          </p>
-
-          <p>
-            File：
-            {
-              datasetResult.file_path
-            }
-          </p>
-
-          <p>
-            Manifest：
-            {
-              datasetResult
-                .manifest_updated
-                ? "Updated"
-                : "Not updated"
-            }
-          </p>
-
-          <p>
-            下一 Take：
-            {takeId}
           </p>
         </div>
       )}
@@ -1913,6 +2862,207 @@ export function CameraView() {
           </p>
         </div>
       )}
+
+
+      {workMode ===
+        "collection" && (
+        <div className="sample-history-panel">
+
+          <div className="sample-history-header">
+
+            <div>
+              <strong>
+                {
+                  selectedSign.label
+                }
+                {" · "}
+                样本记录
+              </strong>
+
+              <span>
+                {
+                  currentSignSamples
+                    .filter(
+                      (sample) =>
+                        sample.input_usable
+                    )
+                    .length
+                }
+                {" "}
+                条有效
+              </span>
+            </div>
+
+            {historyLoading && (
+              <span>
+                正在同步…
+              </span>
+            )}
+
+          </div>
+
+
+          {
+            currentSignSamples.length ===
+            0
+              ?
+                (
+                  <div className="sample-history-empty">
+                    当前词暂无样本
+                  </div>
+                )
+              :
+                (
+                  <div className="sample-history-list">
+
+                    {
+                      currentSignSamples.map(
+                        (sample) => {
+                          const sign =
+                            COLLECTION_SIGNS.find(
+                              (item) =>
+                                item.signId ===
+                                sample.sign_id
+                            );
+
+                          const handRatio =
+                            sign
+                              ?.handednessPolicy ===
+                            "both_hands"
+                              ?
+                                sample
+                                  .both_hands_usable_ratio
+                              :
+                                Math.max(
+                                  sample
+                                    .left_hand_usable_ratio,
+                                  sample
+                                    .right_hand_usable_ratio
+                                );
+
+                          return (
+                            <div
+                              key={
+                                sample.sample_id
+                              }
+                              className={
+                                sample.input_usable
+                                  ?
+                                    "sample-history-row"
+                                  :
+                                    "sample-history-row sample-history-row-bad"
+                              }
+                            >
+
+                              <div className="sample-history-main">
+                                <strong>
+                                  Take {
+                                    sample.take_id
+                                  }
+                                </strong>
+
+                                <code>
+                                  {
+                                    sample.sample_id
+                                  }
+                                </code>
+                              </div>
+
+
+                              <div className="sample-history-metrics">
+
+                                <span
+                                  className={
+                                    sample.input_usable
+                                      ?
+                                        "sample-good-pill"
+                                      :
+                                        "sample-bad-pill"
+                                  }
+                                >
+                                  {
+                                    sample.input_usable
+                                      ?
+                                        "合格"
+                                      :
+                                        "需重采"
+                                  }
+                                </span>
+
+                                <span>
+                                  手：
+                                  {
+                                    sample.active_hand
+                                  }
+                                </span>
+
+                                <span>
+                                  Canonical：
+                                  {(
+                                    sample
+                                      .landmark_valid_ratio *
+                                    100
+                                  ).toFixed(
+                                    1
+                                  )}
+                                  %
+                                </span>
+
+                                <span>
+                                  手部稳定：
+                                  {(
+                                    handRatio *
+                                    100
+                                  ).toFixed(
+                                    1
+                                  )}
+                                  %
+                                </span>
+
+                                <span>
+                                  肩部：
+                                  {(
+                                    sample
+                                      .shoulder_usable_ratio *
+                                    100
+                                  ).toFixed(
+                                    1
+                                  )}
+                                  %
+                                </span>
+
+                              </div>
+
+
+                              <button
+                                type="button"
+                                className="sample-delete-button"
+                                disabled={
+                                  captureBusy
+                                }
+                                onClick={() =>
+                                  void handleDeleteSample(
+                                    sample
+                                  )
+                                }
+                              >
+                                删除 / 重采
+                              </button>
+
+                            </div>
+                          );
+                        }
+                      )
+                    }
+
+                  </div>
+                )
+          }
+
+        </div>
+      )}
+
     </section>
   );
 }
+

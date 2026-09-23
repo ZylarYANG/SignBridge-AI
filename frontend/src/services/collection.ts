@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   LandmarkFrame,
 } from "../types/landmark";
 
@@ -69,6 +69,8 @@ export type DatasetQualityResult = {
     ActiveHand;
 };
 
+
+export const COLLECTION_TARGET_TAKES = 5;
 
 export const COLLECTION_SIGNS:
   CollectionSign[] = [
@@ -606,7 +608,7 @@ export function calculateDatasetQuality(
   ) {
     if (
       bothHandsUsableRatio >=
-      0.7
+      0.6
     ) {
       activeHand = "both";
 
@@ -623,7 +625,7 @@ export function calculateDatasetQuality(
 
     if (
       bestRatio >=
-      0.7
+      0.5
     ) {
       activeHand =
         leftHandUsableRatio >=
