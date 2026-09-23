@@ -286,3 +286,29 @@ def update_signer_profile(
                 mode="json"
             ),
     }
+
+
+@router.get(
+    "/catalog"
+)
+def get_sign_catalog() -> dict:
+    from app.services.catalog_store import (
+        load_sign_catalog,
+    )
+
+    try:
+        return (
+            load_sign_catalog()
+        )
+
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=str(exc),
+        ) from exc
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=str(exc),
+        ) from exc
