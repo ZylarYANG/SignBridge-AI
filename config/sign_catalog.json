@@ -1,7 +1,6 @@
-﻿{
+{
   "schema_version": "2.1",
   "catalog_name": "SignBridge CSL MVP",
-
   "model_input": {
     "sequence_length": 64,
     "landmark_count": 54,
@@ -12,15 +11,16 @@
       "scale": "shoulder_width"
     }
   },
-
   "quality_policy": {
     "full_canonical_required": false,
     "canonical_54_over_54_is_diagnostic_only": true,
     "minimum_raw_frames": 10,
     "minimum_shoulder_usable_ratio": 0.8,
-    "hand_requirement_source": "per_sign_metadata"
+    "hand_requirement_source": "per_sign_metadata",
+    "minimum_single_hand_usable_ratio": 0.5,
+    "minimum_both_hands_usable_ratio": 0.6,
+    "minimum_hand_landmark_ratio_per_frame": 0.75
   },
-
   "allowed_values": {
     "handedness_policy": [
       "dominant_either",
@@ -44,14 +44,16 @@
       "medium"
     ]
   },
-
   "signs": [
     {
       "class_id": 0,
       "sign_id": "CSL_thanks",
       "label": "谢谢",
       "handedness_policy": "dominant_either",
-      "required_parts": ["upper_body", "active_hand"],
+      "required_parts": [
+        "upper_body",
+        "active_hand"
+      ],
       "direction_reference": "body_relative",
       "direction_sensitive": false,
       "verification_status": "web_researched",
@@ -62,7 +64,10 @@
       "sign_id": "CSL_bye",
       "label": "再见",
       "handedness_policy": "dominant_either",
-      "required_parts": ["upper_body", "active_hand"],
+      "required_parts": [
+        "upper_body",
+        "active_hand"
+      ],
       "direction_reference": "body_relative",
       "direction_sensitive": false,
       "verification_status": "web_researched",
@@ -73,7 +78,10 @@
       "sign_id": "CSL_friend",
       "label": "朋友",
       "handedness_policy": "both_hands",
-      "required_parts": ["upper_body", "both_hands"],
+      "required_parts": [
+        "upper_body",
+        "both_hands"
+      ],
       "direction_reference": "body_relative",
       "direction_sensitive": false,
       "verification_status": "web_researched",
@@ -84,7 +92,10 @@
       "sign_id": "CSL_hello",
       "label": "你好",
       "handedness_policy": "dominant_either",
-      "required_parts": ["upper_body", "active_hand"],
+      "required_parts": [
+        "upper_body",
+        "active_hand"
+      ],
       "direction_reference": "interlocutor_relative",
       "direction_sensitive": true,
       "verification_status": "web_researched",
@@ -95,7 +106,10 @@
       "sign_id": "CSL_help",
       "label": "帮助",
       "handedness_policy": "both_hands",
-      "required_parts": ["upper_body", "both_hands"],
+      "required_parts": [
+        "upper_body",
+        "both_hands"
+      ],
       "direction_reference": "interlocutor_relative",
       "direction_sensitive": true,
       "verification_status": "web_researched",
@@ -106,7 +120,10 @@
       "sign_id": "CSL_like",
       "label": "喜欢",
       "handedness_policy": "dominant_either",
-      "required_parts": ["upper_body", "active_hand"],
+      "required_parts": [
+        "upper_body",
+        "active_hand"
+      ],
       "direction_reference": "body_relative",
       "direction_sensitive": false,
       "verification_status": "web_researched",
@@ -117,7 +134,10 @@
       "sign_id": "CSL_me",
       "label": "我",
       "handedness_policy": "dominant_either",
-      "required_parts": ["upper_body", "active_hand"],
+      "required_parts": [
+        "upper_body",
+        "active_hand"
+      ],
       "direction_reference": "self_relative",
       "direction_sensitive": true,
       "verification_status": "web_researched",
@@ -128,7 +148,10 @@
       "sign_id": "CSL_name",
       "label": "名字",
       "handedness_policy": "both_hands",
-      "required_parts": ["upper_body", "both_hands"],
+      "required_parts": [
+        "upper_body",
+        "both_hands"
+      ],
       "direction_reference": "body_relative",
       "direction_sensitive": false,
       "verification_status": "web_researched",
@@ -139,7 +162,10 @@
       "sign_id": "CSL_never_mind",
       "label": "没关系",
       "handedness_policy": "both_hands",
-      "required_parts": ["upper_body", "both_hands"],
+      "required_parts": [
+        "upper_body",
+        "both_hands"
+      ],
       "direction_reference": "body_relative",
       "direction_sensitive": false,
       "verification_status": "web_researched",
@@ -150,7 +176,10 @@
       "sign_id": "CSL_no",
       "label": "不",
       "handedness_policy": "dominant_either",
-      "required_parts": ["upper_body", "active_hand"],
+      "required_parts": [
+        "upper_body",
+        "active_hand"
+      ],
       "direction_reference": "body_relative",
       "direction_sensitive": false,
       "verification_status": "web_researched",
@@ -161,7 +190,10 @@
       "sign_id": "CSL_please",
       "label": "请",
       "handedness_policy": "both_hands",
-      "required_parts": ["upper_body", "both_hands"],
+      "required_parts": [
+        "upper_body",
+        "both_hands"
+      ],
       "direction_reference": "body_relative",
       "direction_sensitive": false,
       "verification_status": "web_researched",
@@ -172,7 +204,10 @@
       "sign_id": "CSL_sorry",
       "label": "对不起",
       "handedness_policy": "dominant_either",
-      "required_parts": ["upper_body", "active_hand"],
+      "required_parts": [
+        "upper_body",
+        "active_hand"
+      ],
       "direction_reference": "self_relative",
       "direction_sensitive": false,
       "verification_status": "web_researched",
@@ -183,7 +218,10 @@
       "sign_id": "CSL_what",
       "label": "什么",
       "handedness_policy": "both_hands",
-      "required_parts": ["upper_body", "both_hands"],
+      "required_parts": [
+        "upper_body",
+        "both_hands"
+      ],
       "direction_reference": "body_relative",
       "direction_sensitive": false,
       "verification_status": "web_researched",
@@ -194,7 +232,10 @@
       "sign_id": "CSL_yes",
       "label": "是",
       "handedness_policy": "dominant_either",
-      "required_parts": ["upper_body", "active_hand"],
+      "required_parts": [
+        "upper_body",
+        "active_hand"
+      ],
       "direction_reference": "body_relative",
       "direction_sensitive": false,
       "verification_status": "web_researched",
@@ -205,7 +246,10 @@
       "sign_id": "CSL_you",
       "label": "你",
       "handedness_policy": "dominant_either",
-      "required_parts": ["upper_body", "active_hand"],
+      "required_parts": [
+        "upper_body",
+        "active_hand"
+      ],
       "direction_reference": "interlocutor_relative",
       "direction_sensitive": true,
       "verification_status": "web_researched",
