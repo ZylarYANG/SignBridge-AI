@@ -2074,6 +2074,131 @@ export function CameraView() {
                         "失败";
 
 
+  useEffect(() => {
+    const usableCount =
+      currentSignSamples.filter(
+        (sample) =>
+          sample.input_usable
+      ).length;
+
+
+    const canCapture =
+      visionStatus ===
+        "ready"
+      &&
+      !captureBusy
+      &&
+      !historyLoading
+      &&
+      (
+        workMode ===
+          "practice"
+        ||
+        (
+          catalogStatus ===
+            "ready"
+          &&
+          isValidSignerId(
+            signerId
+          )
+        )
+      );
+
+
+    window.dispatchEvent(
+      new CustomEvent(
+        "signbridge:workbench-status",
+        {
+          detail: {
+            workMode,
+
+            signLabel:
+              selectedSign.label,
+
+            signId:
+              selectedSign.signId,
+
+            signerId:
+              normalizeSignerId(
+                signerId
+              ),
+
+            profileName:
+              activeProfile.name,
+
+            targetTakes,
+
+            usableCount,
+
+            takeId,
+
+            poseDetected,
+
+            handsDetected,
+
+            readinessReady:
+              liveInputReadiness.ready,
+
+            readinessMessage:
+              liveInputReadiness.message,
+
+            captureStatus,
+
+            countdownValue,
+
+            cameraStatus,
+
+            visionStatus,
+
+            canCapture,
+          },
+        }
+      )
+    );
+  }, [
+    workMode,
+    selectedSign.label,
+    selectedSign.signId,
+    signerId,
+    activeProfile.name,
+    targetTakes,
+    datasetSamples,
+    takeId,
+    poseDetected,
+    handsDetected,
+    liveInputReadiness.ready,
+    liveInputReadiness.message,
+    captureStatus,
+    countdownValue,
+    cameraStatus,
+    visionStatus,
+    captureBusy,
+    historyLoading,
+    catalogStatus,
+  ]);
+
+
+  useEffect(() => {
+    function handleSidebarCapture() {
+      startCapture();
+    }
+
+
+    window.addEventListener(
+      "signbridge:start-capture",
+      handleSidebarCapture
+    );
+
+
+    return () => {
+      window.removeEventListener(
+        "signbridge:start-capture",
+        handleSidebarCapture
+      );
+    };
+  });
+
+
   return (
     <section className="camera-panel">
 
