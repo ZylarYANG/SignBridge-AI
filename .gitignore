@@ -57,3 +57,8 @@ Thumbs.db
 data/raw/samples/*
 data/manifests/*.jsonl
 data/processed/*
+*.bak
+/training/cross_validation/
+/training/cross_validation_exclude_*/
+/training/evaluation/
+/training/quick_validation_s004/
