@@ -1,0 +1,16 @@
+﻿sign_id,signer_id,samples,selected_hands,shape_coverage,trajectory_coverage
+CSL_bye,S001,20,right:20,1.0,1.0
+CSL_bye,S002,20,right:20,1.0,1.0
+CSL_bye,S003,5,right:5,1.0,1.0
+CSL_bye,S004,20,right:20,1.0,1.0
+CSL_bye,S005,20,right:20,1.0,1.0
+CSL_hello,S001,20,right:20,1.0,1.0
+CSL_hello,S002,20,right:20,0.9833333333333332,1.0
+CSL_hello,S003,5,right:5,1.0,1.0
+CSL_hello,S004,20,right:20,1.0,1.0
+CSL_hello,S005,20,"left:2,right:18",0.9333333333333333,1.0
+CSL_what,S001,20,both:20,0.9916666666666668,1.0
+CSL_what,S002,20,both:20,1.0,1.0
+CSL_what,S003,5,both:5,1.0,1.0
+CSL_what,S004,20,both:20,1.0,1.0
+CSL_what,S005,20,both:20,0.8999999999999998,1.0

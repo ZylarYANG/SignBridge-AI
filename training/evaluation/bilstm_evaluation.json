@@ -1,0 +1,326 @@
+{
+  "model": "BiLSTMBaseline",
+  "checkpoint": "D:\\SignBridge-AI\\SignBridge-AI-starter\\SignBridge-AI\\models\\checkpoints\\bilstm_baseline_best.pt",
+  "catalog_schema_version": "2.1",
+  "test_signers": [
+    "S002"
+  ],
+  "sample_count": 75,
+  "num_classes": 15,
+  "test_loss": 2.055391896565755,
+  "accuracy": 0.5466666666666666,
+  "top3_accuracy": 0.72,
+  "macro_precision": 0.4266666666666667,
+  "macro_recall": 0.5466666666666666,
+  "macro_f1": 0.4665361691448648,
+  "per_class": [
+    {
+      "class_id": 0,
+      "support": 5,
+      "correct": 4,
+      "incorrect": 1,
+      "accuracy": 0.8,
+      "precision": 0.4444444444444444,
+      "recall": 0.8,
+      "f1": 0.5714285714285714,
+      "sign_id": "CSL_thanks",
+      "label": "谢谢"
+    },
+    {
+      "class_id": 1,
+      "support": 5,
+      "correct": 4,
+      "incorrect": 1,
+      "accuracy": 0.8,
+      "precision": 0.4,
+      "recall": 0.8,
+      "f1": 0.5333333333333333,
+      "sign_id": "CSL_bye",
+      "label": "再见"
+    },
+    {
+      "class_id": 2,
+      "support": 5,
+      "correct": 5,
+      "incorrect": 0,
+      "accuracy": 1.0,
+      "precision": 0.8333333333333334,
+      "recall": 1.0,
+      "f1": 0.9090909090909091,
+      "sign_id": "CSL_friend",
+      "label": "朋友"
+    },
+    {
+      "class_id": 3,
+      "support": 5,
+      "correct": 0,
+      "incorrect": 5,
+      "accuracy": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "sign_id": "CSL_hello",
+      "label": "你好"
+    },
+    {
+      "class_id": 4,
+      "support": 5,
+      "correct": 0,
+      "incorrect": 5,
+      "accuracy": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "sign_id": "CSL_help",
+      "label": "帮助"
+    },
+    {
+      "class_id": 5,
+      "support": 5,
+      "correct": 5,
+      "incorrect": 0,
+      "accuracy": 1.0,
+      "precision": 0.8333333333333334,
+      "recall": 1.0,
+      "f1": 0.9090909090909091,
+      "sign_id": "CSL_like",
+      "label": "喜欢"
+    },
+    {
+      "class_id": 6,
+      "support": 5,
+      "correct": 0,
+      "incorrect": 5,
+      "accuracy": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "sign_id": "CSL_me",
+      "label": "我"
+    },
+    {
+      "class_id": 7,
+      "support": 5,
+      "correct": 5,
+      "incorrect": 0,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "sign_id": "CSL_name",
+      "label": "名字"
+    },
+    {
+      "class_id": 8,
+      "support": 5,
+      "correct": 4,
+      "incorrect": 1,
+      "accuracy": 0.8,
+      "precision": 0.6666666666666666,
+      "recall": 0.8,
+      "f1": 0.7272727272727272,
+      "sign_id": "CSL_never_mind",
+      "label": "没关系"
+    },
+    {
+      "class_id": 9,
+      "support": 5,
+      "correct": 0,
+      "incorrect": 5,
+      "accuracy": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "sign_id": "CSL_no",
+      "label": "不"
+    },
+    {
+      "class_id": 10,
+      "support": 5,
+      "correct": 0,
+      "incorrect": 5,
+      "accuracy": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "sign_id": "CSL_please",
+      "label": "请"
+    },
+    {
+      "class_id": 11,
+      "support": 5,
+      "correct": 5,
+      "incorrect": 0,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "sign_id": "CSL_sorry",
+      "label": "对不起"
+    },
+    {
+      "class_id": 12,
+      "support": 5,
+      "correct": 5,
+      "incorrect": 0,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "sign_id": "CSL_what",
+      "label": "什么"
+    },
+    {
+      "class_id": 13,
+      "support": 5,
+      "correct": 0,
+      "incorrect": 5,
+      "accuracy": 0.0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "sign_id": "CSL_yes",
+      "label": "是"
+    },
+    {
+      "class_id": 14,
+      "support": 5,
+      "correct": 4,
+      "incorrect": 1,
+      "accuracy": 0.8,
+      "precision": 0.2222222222222222,
+      "recall": 0.8,
+      "f1": 0.3478260869565218,
+      "sign_id": "CSL_you",
+      "label": "你"
+    }
+  ],
+  "top_confusions": [
+    {
+      "true_class_id": 3,
+      "true_sign_id": "CSL_hello",
+      "true_label": "你好",
+      "predicted_class_id": 14,
+      "predicted_sign_id": "CSL_you",
+      "predicted_label": "你",
+      "count": 5
+    },
+    {
+      "true_class_id": 10,
+      "true_sign_id": "CSL_please",
+      "true_label": "请",
+      "predicted_class_id": 0,
+      "predicted_sign_id": "CSL_thanks",
+      "predicted_label": "谢谢",
+      "count": 5
+    },
+    {
+      "true_class_id": 13,
+      "true_sign_id": "CSL_yes",
+      "true_label": "是",
+      "predicted_class_id": 14,
+      "predicted_sign_id": "CSL_you",
+      "predicted_label": "你",
+      "count": 5
+    },
+    {
+      "true_class_id": 6,
+      "true_sign_id": "CSL_me",
+      "true_label": "我",
+      "predicted_class_id": 14,
+      "predicted_sign_id": "CSL_you",
+      "predicted_label": "你",
+      "count": 4
+    },
+    {
+      "true_class_id": 4,
+      "true_sign_id": "CSL_help",
+      "true_label": "帮助",
+      "predicted_class_id": 1,
+      "predicted_sign_id": "CSL_bye",
+      "predicted_label": "再见",
+      "count": 3
+    },
+    {
+      "true_class_id": 4,
+      "true_sign_id": "CSL_help",
+      "true_label": "帮助",
+      "predicted_class_id": 8,
+      "predicted_sign_id": "CSL_never_mind",
+      "predicted_label": "没关系",
+      "count": 2
+    },
+    {
+      "true_class_id": 9,
+      "true_sign_id": "CSL_no",
+      "true_label": "不",
+      "predicted_class_id": 1,
+      "predicted_sign_id": "CSL_bye",
+      "predicted_label": "再见",
+      "count": 2
+    },
+    {
+      "true_class_id": 9,
+      "true_sign_id": "CSL_no",
+      "true_label": "不",
+      "predicted_class_id": 6,
+      "predicted_sign_id": "CSL_me",
+      "predicted_label": "我",
+      "count": 2
+    },
+    {
+      "true_class_id": 0,
+      "true_sign_id": "CSL_thanks",
+      "true_label": "谢谢",
+      "predicted_class_id": 9,
+      "predicted_sign_id": "CSL_no",
+      "predicted_label": "不",
+      "count": 1
+    },
+    {
+      "true_class_id": 1,
+      "true_sign_id": "CSL_bye",
+      "true_label": "再见",
+      "predicted_class_id": 9,
+      "predicted_sign_id": "CSL_no",
+      "predicted_label": "不",
+      "count": 1
+    },
+    {
+      "true_class_id": 6,
+      "true_sign_id": "CSL_me",
+      "true_label": "我",
+      "predicted_class_id": 1,
+      "predicted_sign_id": "CSL_bye",
+      "predicted_label": "再见",
+      "count": 1
+    },
+    {
+      "true_class_id": 8,
+      "true_sign_id": "CSL_never_mind",
+      "true_label": "没关系",
+      "predicted_class_id": 2,
+      "predicted_sign_id": "CSL_friend",
+      "predicted_label": "朋友",
+      "count": 1
+    },
+    {
+      "true_class_id": 9,
+      "true_sign_id": "CSL_no",
+      "true_label": "不",
+      "predicted_class_id": 5,
+      "predicted_sign_id": "CSL_like",
+      "predicted_label": "喜欢",
+      "count": 1
+    },
+    {
+      "true_class_id": 14,
+      "true_sign_id": "CSL_you",
+      "true_label": "你",
+      "predicted_class_id": 9,
+      "predicted_sign_id": "CSL_no",
+      "predicted_label": "不",
+      "count": 1
+    }
+  ]
+}

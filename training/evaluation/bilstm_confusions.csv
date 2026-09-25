@@ -1,0 +1,15 @@
+﻿true_class_id,true_sign_id,true_label,predicted_class_id,predicted_sign_id,predicted_label,count
+3,CSL_hello,你好,14,CSL_you,你,5
+10,CSL_please,请,0,CSL_thanks,谢谢,5
+13,CSL_yes,是,14,CSL_you,你,5
+6,CSL_me,我,14,CSL_you,你,4
+4,CSL_help,帮助,1,CSL_bye,再见,3
+4,CSL_help,帮助,8,CSL_never_mind,没关系,2
+9,CSL_no,不,1,CSL_bye,再见,2
+9,CSL_no,不,6,CSL_me,我,2
+0,CSL_thanks,谢谢,9,CSL_no,不,1
+1,CSL_bye,再见,9,CSL_no,不,1
+6,CSL_me,我,1,CSL_bye,再见,1
+8,CSL_never_mind,没关系,2,CSL_friend,朋友,1
+9,CSL_no,不,5,CSL_like,喜欢,1
+14,CSL_you,你,9,CSL_no,不,1

@@ -1,0 +1,15 @@
+﻿true\pred,CSL_thanks,CSL_bye,CSL_friend,CSL_hello,CSL_help,CSL_like,CSL_me,CSL_name,CSL_never_mind,CSL_no,CSL_please,CSL_sorry,CSL_what,CSL_yes
+CSL_thanks,12,0,0,2,0,0,0,0,0,0,0,0,0,1
+CSL_bye,0,13,0,0,0,0,0,0,0,2,0,0,0,0
+CSL_friend,0,0,5,0,5,0,0,0,0,0,0,0,5,0
+CSL_hello,1,1,0,5,0,0,3,0,0,0,0,0,0,5
+CSL_help,0,4,0,0,5,0,0,0,6,0,0,0,0,0
+CSL_like,0,0,0,0,0,15,0,0,0,0,0,0,0,0
+CSL_me,0,1,0,5,0,3,0,0,0,0,0,0,0,6
+CSL_name,0,0,0,0,0,0,0,15,0,0,0,0,0,0
+CSL_never_mind,0,0,1,0,0,0,0,0,10,0,0,2,2,0
+CSL_no,0,7,0,0,0,3,0,0,0,5,0,0,0,0
+CSL_please,5,0,3,0,0,0,0,0,1,0,0,0,6,0
+CSL_sorry,0,0,0,0,0,0,0,0,0,0,0,15,0,0
+CSL_what,0,0,0,0,0,0,0,0,0,0,5,0,10,0
+CSL_yes,3,0,0,0,0,0,0,0,0,1,0,0,0,11

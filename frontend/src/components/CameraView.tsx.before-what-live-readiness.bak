@@ -2107,40 +2107,6 @@ export function CameraView() {
       );
 
 
-    // CSL_WHAT_LIVE_CAPTURE_READINESS
-    const whatPalmFlipCapture =
-      workMode ===
-        "collection"
-      &&
-      selectedSign.signId ===
-        "CSL_what"
-      &&
-      captureStatus ===
-        "capturing";
-
-
-    const statusReadinessReady =
-      whatPalmFlipCapture
-        ?
-          poseDetected
-        :
-          liveInputReadiness.ready;
-
-
-    const statusReadinessMessage =
-      whatPalmFlipCapture
-        ?
-          (
-            poseDetected
-              ?
-                "\u7ffb\u8155\u65f6\u77ed\u6682\u8ddf\u8e2a\u6ce2\u52a8\u53ef\u63a5\u53d7\uff0c\u8bf7\u4fdd\u6301\u81ea\u7136\u52a8\u4f5c\u3002"
-              :
-                "\u8bf7\u4fdd\u6301\u4e0a\u534a\u8eab\u8fdb\u5165\u753b\u9762\u3002"
-          )
-        :
-          liveInputReadiness.message;
-
-
     window.dispatchEvent(
       new CustomEvent(
         "signbridge:workbench-status",
@@ -2213,10 +2179,10 @@ export function CameraView() {
             handsDetected,
 
             readinessReady:
-              statusReadinessReady,
+              liveInputReadiness.ready,
 
             readinessMessage:
-              statusReadinessMessage,
+              liveInputReadiness.message,
 
             captureStatus,
 

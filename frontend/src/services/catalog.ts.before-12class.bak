@@ -176,14 +176,6 @@ type RawCatalog = {
 };
 
 
-const MVP_INACTIVE_SIGN_IDS =
-  new Set<string>([
-    "CSL_me",
-    "CSL_please",
-    "CSL_you",
-  ]);
-
-
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL
   ??
@@ -213,12 +205,6 @@ export async function fetchSignCatalog(
 
   const signs =
     raw.signs
-      .filter(
-        (sign) =>
-          !MVP_INACTIVE_SIGN_IDS.has(
-            sign.sign_id
-          )
-      )
       .map(
         (sign) => ({
           classId:
