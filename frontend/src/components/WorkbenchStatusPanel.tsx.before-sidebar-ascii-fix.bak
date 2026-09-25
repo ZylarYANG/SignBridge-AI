@@ -18,21 +18,6 @@ type CaptureStatus =
   | "error";
 
 
-type RecentSample = {
-  takeId: number;
-
-  inputUsable: boolean;
-
-  activeHand: string;
-
-  landmarkValidRatio:
-    number;
-
-  handUsableRatio:
-    number;
-};
-
-
 type WorkbenchStatusDetail = {
   workMode: WorkMode;
 
@@ -46,9 +31,6 @@ type WorkbenchStatusDetail = {
 
   usableCount: number;
   takeId: number;
-
-  recentSamples:
-    RecentSample[];
 
   poseDetected: boolean;
   handsDetected: number;
@@ -93,9 +75,6 @@ const INITIAL_STATUS:
 
     takeId:
       1,
-
-    recentSamples:
-      [],
 
     poseDetected:
       false,
@@ -489,135 +468,6 @@ export function WorkbenchStatusPanel() {
             Required Input 为 Warning
             时仍允许开始采集，可在倒计时期间完成就位。
           </p>
-
-
-          <div className="workbench-recent-samples">
-
-            <div className="workbench-recent-samples-header">
-
-              <strong>
-                样本记录
-              </strong>
-
-              <span>
-                {
-                  status.usableCount
-                }
-                {" / "}
-                {
-                  status.targetTakes
-                }
-                {" 有效"}
-              </span>
-
-            </div>
-
-
-            {
-              status.recentSamples.length ===
-              0
-                ?
-                  (
-                    <div className="workbench-recent-samples-empty">
-                      当前词暂无样本
-                    </div>
-                  )
-                :
-                  (
-                    <div className="workbench-recent-samples-list">
-
-                      {
-                        status.recentSamples.map(
-                          (sample) => (
-                            <div
-                              key={
-                                sample.takeId
-                              }
-                              className={
-                                sample.inputUsable
-                                  ?
-                                    "workbench-recent-sample"
-                                  :
-                                    "workbench-recent-sample workbench-recent-sample-bad"
-                              }
-                            >
-
-                              <div className="workbench-recent-sample-top">
-
-                                <strong>
-                                  Take {
-                                    sample.takeId
-                                  }
-                                </strong>
-
-                                <span
-                                  className={
-                                    sample.inputUsable
-                                      ?
-                                        "workbench-recent-sample-good"
-                                      :
-                                        "workbench-recent-sample-warning"
-                                  }
-                                >
-                                  {
-                                    sample.inputUsable
-                                      ?
-                                        "合格"
-                                      :
-                                        "需重采"
-                                  }
-                                </span>
-
-                              </div>
-
-
-                              <div className="workbench-recent-sample-metrics">
-
-                                <span>
-                                  手?
-                                  {
-                                    sample.activeHand
-                                  }
-                                </span>
-
-                                <span>
-                                  手部?
-                                  {
-                                    (
-                                      sample.handUsableRatio *
-                                      100
-                                    ).toFixed(
-                                      0
-                                    )
-                                  }
-                                  %
-                                </span>
-
-                                <span>
-                                  Canonical?
-                                  {
-                                    (
-                                      sample.landmarkValidRatio *
-                                      100
-                                    ).toFixed(
-                                      0
-                                    )
-                                  }
-                                  %
-                                </span>
-
-                              </div>
-
-                            </div>
-                          )
-                        )
-                      }
-
-                    </div>
-                  )
-            }
-
-          </div>
 
         </>
       ) : (

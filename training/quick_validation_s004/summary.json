@@ -1,0 +1,22 @@
+{
+  "train_signers": [
+    "S001",
+    "S002"
+  ],
+  "validation_signers": [
+    "S003"
+  ],
+  "test_signers": [
+    "S004"
+  ],
+  "train_samples": 120,
+  "validation_samples": 60,
+  "test_samples": 240,
+  "best_epoch": 24,
+  "test_loss": 0.9067730705564221,
+  "top1_accuracy": 0.8083333333333333,
+  "top3_accuracy": 0.9208333333333333,
+  "macro_precision": 0.8305662356649198,
+  "macro_recall": 0.8083333333333335,
+  "macro_f1": 0.7779421346494518
+}

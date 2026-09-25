@@ -1,0 +1,395 @@
+{
+  "experiment": "bilstm_hsa_s004val_s005test",
+  "dataset_snapshot_sha256": "E4AE9B57ABAEFE285E5C4B9398DB19C3E79B2D423C7EE5105D11B30C863DABB7",
+  "seed": 42,
+  "best_epoch": 2,
+  "best_validation_loss": 0.5987539144853751,
+  "train_signers": [
+    "S001",
+    "S002",
+    "S003"
+  ],
+  "validation_signers": [
+    "S004"
+  ],
+  "test_signers": [
+    "S005"
+  ],
+  "sample_counts": {
+    "train": 540,
+    "validation": 240,
+    "test": 240
+  },
+  "class_mapping": {
+    "0": {
+      "original_class_id": 0,
+      "sign_id": "CSL_thanks",
+      "label": "谢谢"
+    },
+    "1": {
+      "original_class_id": 1,
+      "sign_id": "CSL_bye",
+      "label": "再见"
+    },
+    "2": {
+      "original_class_id": 2,
+      "sign_id": "CSL_friend",
+      "label": "朋友"
+    },
+    "3": {
+      "original_class_id": 3,
+      "sign_id": "CSL_hello",
+      "label": "你好"
+    },
+    "4": {
+      "original_class_id": 4,
+      "sign_id": "CSL_help",
+      "label": "帮助"
+    },
+    "5": {
+      "original_class_id": 5,
+      "sign_id": "CSL_like",
+      "label": "喜欢"
+    },
+    "6": {
+      "original_class_id": 7,
+      "sign_id": "CSL_name",
+      "label": "名字"
+    },
+    "7": {
+      "original_class_id": 8,
+      "sign_id": "CSL_never_mind",
+      "label": "没关系"
+    },
+    "8": {
+      "original_class_id": 9,
+      "sign_id": "CSL_no",
+      "label": "不"
+    },
+    "9": {
+      "original_class_id": 11,
+      "sign_id": "CSL_sorry",
+      "label": "对不起"
+    },
+    "10": {
+      "original_class_id": 12,
+      "sign_id": "CSL_what",
+      "label": "什么"
+    },
+    "11": {
+      "original_class_id": 13,
+      "sign_id": "CSL_yes",
+      "label": "是"
+    }
+  },
+  "sample_count": 240,
+  "top1_accuracy": 0.8208333333333333,
+  "top3_accuracy": 0.9791666666666666,
+  "macro_precision": 0.7661960246878725,
+  "macro_recall": 0.8208333333333333,
+  "macro_f1": 0.7672527809368422,
+  "per_class": [
+    {
+      "class_id": 0,
+      "support": 20,
+      "correct": 19,
+      "precision": 0.59375,
+      "recall": 0.95,
+      "f1": 0.7307692307692308,
+      "original_class_id": 0,
+      "sign_id": "CSL_thanks",
+      "label": "谢谢"
+    },
+    {
+      "class_id": 1,
+      "support": 20,
+      "correct": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "original_class_id": 1,
+      "sign_id": "CSL_bye",
+      "label": "再见"
+    },
+    {
+      "class_id": 2,
+      "support": 20,
+      "correct": 20,
+      "precision": 0.9090909090909091,
+      "recall": 1.0,
+      "f1": 0.9523809523809523,
+      "original_class_id": 2,
+      "sign_id": "CSL_friend",
+      "label": "朋友"
+    },
+    {
+      "class_id": 3,
+      "support": 20,
+      "correct": 1,
+      "precision": 0.5,
+      "recall": 0.05,
+      "f1": 0.09090909090909091,
+      "original_class_id": 3,
+      "sign_id": "CSL_hello",
+      "label": "你好"
+    },
+    {
+      "class_id": 4,
+      "support": 20,
+      "correct": 20,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "original_class_id": 4,
+      "sign_id": "CSL_help",
+      "label": "帮助"
+    },
+    {
+      "class_id": 5,
+      "support": 20,
+      "correct": 20,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "original_class_id": 5,
+      "sign_id": "CSL_like",
+      "label": "喜欢"
+    },
+    {
+      "class_id": 6,
+      "support": 20,
+      "correct": 20,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "original_class_id": 7,
+      "sign_id": "CSL_name",
+      "label": "名字"
+    },
+    {
+      "class_id": 7,
+      "support": 20,
+      "correct": 20,
+      "precision": 0.9523809523809523,
+      "recall": 1.0,
+      "f1": 0.975609756097561,
+      "original_class_id": 8,
+      "sign_id": "CSL_never_mind",
+      "label": "没关系"
+    },
+    {
+      "class_id": 8,
+      "support": 20,
+      "correct": 20,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666,
+      "original_class_id": 9,
+      "sign_id": "CSL_no",
+      "label": "不"
+    },
+    {
+      "class_id": 9,
+      "support": 20,
+      "correct": 20,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "original_class_id": 11,
+      "sign_id": "CSL_sorry",
+      "label": "对不起"
+    },
+    {
+      "class_id": 10,
+      "support": 20,
+      "correct": 17,
+      "precision": 0.7391304347826086,
+      "recall": 0.85,
+      "f1": 0.7906976744186046,
+      "original_class_id": 12,
+      "sign_id": "CSL_what",
+      "label": "什么"
+    },
+    {
+      "class_id": 11,
+      "support": 20,
+      "correct": 20,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "original_class_id": 13,
+      "sign_id": "CSL_yes",
+      "label": "是"
+    }
+  ],
+  "confusion_matrix": [
+    [
+      19,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      20,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      20,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      13,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      6,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      20,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      20,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      20,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      20,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      20,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      20,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      17,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      20
+    ]
+  ]
+}

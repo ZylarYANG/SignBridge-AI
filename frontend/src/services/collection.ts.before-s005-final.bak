@@ -289,78 +289,63 @@ export function getLiveInputReadiness(
  * 前端不再维护第二套规则。
  */
 export function calculateDatasetQuality(
-  frames: LandmarkFrame[],
-  sign: CollectionSign,
-  qualityPolicy: {
-    minimumRawFrames:
-      number;
+  frames:
+    LandmarkFrame[],
 
-    minimumShoulderUsableRatio:
-      number;
+  sign:
+    CollectionSign,
 
-    minimumSingleHandUsableRatio:
-      number;
-
-    minimumBothHandsUsableRatio:
-      number;
-
-    minimumHandLandmarkRatioPerFrame:
-      number;
-  }
+  qualityPolicy:
+    QualityPolicy
 ): DatasetQualityResult {
-  if (frames.length === 0) {
+  if (
+    frames.length === 0
+  ) {
     return {
-      inputUsable: false,
+      inputUsable:
+        false,
 
-      landmarkValidRatio: 0,
-      shoulderUsableRatio: 0,
+      landmarkValidRatio:
+        0,
 
-      leftHandUsableRatio: 0,
-      rightHandUsableRatio: 0,
-      bothHandsUsableRatio: 0,
+      shoulderUsableRatio:
+        0,
 
-      activeHand: "none",
+      leftHandUsableRatio:
+        0,
+
+      rightHandUsableRatio:
+        0,
+
+      bothHandsUsableRatio:
+        0,
+
+      activeHand:
+        "none",
     };
   }
 
 
-  let validPointCount = 0;
+  let validPointCount =
+    0;
 
-  let shoulderUsableFrames = 0;
+  let shoulderUsableFrames =
+    0;
 
-  let leftHandUsableFrames = 0;
+  let leftHandUsableFrames =
+    0;
 
-  let rightHandUsableFrames = 0;
+  let rightHandUsableFrames =
+    0;
 
-  let bothHandsUsableFrames = 0;
-
-
-  /*
-   * CSL_what ????????
-   *
-   * ?? -> ?? -> ??
-   *
-   * MediaPipe ??????????
-   * ????????????
-   *
-   * ????????????
-   *
-   * ??????
-   * -> ????
-   * -> ???????
-   *
-   * ???????????????
-   * ????????
-   */
-  let seenBothHands = false;
-
-  let currentBothHandsGap = 0;
-
-  let maxInternalBothHandsGapFrames =
+  let bothHandsUsableFrames =
     0;
 
 
-  for (const frame of frames) {
+  for (
+    const frame
+    of frames
+  ) {
     validPointCount +=
       frame.landmarks.filter(
         (point) =>
@@ -369,85 +354,71 @@ export function calculateDatasetQuality(
 
 
     const leftShoulder =
-      frame.landmarks[45];
+      frame.landmarks[
+        45
+      ];
 
     const rightShoulder =
-      frame.landmarks[46];
+      frame.landmarks[
+        46
+      ];
 
 
     if (
-      leftShoulder?.valid &&
+      leftShoulder?.valid
+      &&
       rightShoulder?.valid
     ) {
-      shoulderUsableFrames += 1;
+      shoulderUsableFrames +=
+        1;
     }
 
 
     const leftReady =
       isHandUsable(
         frame,
+
         0,
+
         qualityPolicy
           .minimumHandLandmarkRatioPerFrame
       );
+
 
     const rightReady =
       isHandUsable(
         frame,
+
         21,
+
         qualityPolicy
           .minimumHandLandmarkRatioPerFrame
       );
 
 
-    if (leftReady) {
-      leftHandUsableFrames += 1;
-    }
-
-
-    if (rightReady) {
-      rightHandUsableFrames += 1;
+    if (
+      leftReady
+    ) {
+      leftHandUsableFrames +=
+        1;
     }
 
 
     if (
-      leftReady &&
       rightReady
     ) {
-      bothHandsUsableFrames += 1;
-
-
-      /*
-       * ???????????
-       * ?????????
-       * ??????????
-       * ??????????????
-       */
-      if (
-        seenBothHands &&
-        currentBothHandsGap > 0
-      ) {
-        maxInternalBothHandsGapFrames =
-          Math.max(
-            maxInternalBothHandsGapFrames,
-            currentBothHandsGap
-          );
-      }
-
-
-      seenBothHands = true;
-
-      currentBothHandsGap = 0;
+      rightHandUsableFrames +=
+        1;
     }
-    else if (seenBothHands) {
-      /*
-       * ??????
-       *
-       * ???????????????????
-       * ???????????
-       * maxInternalBothHandsGapFrames?
-       */
-      currentBothHandsGap += 1;
+
+
+    if (
+      leftReady
+      &&
+      rightReady
+    ) {
+      bothHandsUsableFrames +=
+        1;
     }
   }
 
@@ -457,32 +428,43 @@ export function calculateDatasetQuality(
 
 
   const landmarkValidRatio =
-    validPointCount /
-    (frameCount * 54);
+    validPointCount
+    /
+    (
+      frameCount
+      *
+      54
+    );
 
 
   const shoulderUsableRatio =
-    shoulderUsableFrames /
+    shoulderUsableFrames
+    /
     frameCount;
 
 
   const leftHandUsableRatio =
-    leftHandUsableFrames /
+    leftHandUsableFrames
+    /
     frameCount;
 
 
   const rightHandUsableRatio =
-    rightHandUsableFrames /
+    rightHandUsableFrames
+    /
     frameCount;
 
 
   const bothHandsUsableRatio =
-    bothHandsUsableFrames /
+    bothHandsUsableFrames
+    /
     frameCount;
 
 
   let activeHand:
-    ActiveHand = "none";
+    ActiveHand =
+      "none";
+
 
   let handRequirementReady =
     false;
@@ -492,47 +474,14 @@ export function calculateDatasetQuality(
     sign.handednessPolicy ===
     "both_hands"
   ) {
-    /*
-     * ?????????????
-     */
-    const normalBothHandsReady =
-      bothHandsUsableRatio >=
-      qualityPolicy
-        .minimumBothHandsUsableRatio;
-
-
-    /*
-     * ?????????
-     *
-     * ????
-     * - ?????? >= 50%
-     * - ?????? >= 50%
-     * - ?????? >= 40%
-     *
-     * ??????????
-     * ??? 5 ? raw frame ?
-     * ?????????
-     */
-    const whatPalmFlipReady =
-      sign.signId ===
-        "CSL_what" &&
-      bothHandsUsableRatio >=
-        0.4 &&
-      leftHandUsableRatio >=
-        qualityPolicy
-          .minimumSingleHandUsableRatio &&
-      rightHandUsableRatio >=
-        qualityPolicy
-          .minimumSingleHandUsableRatio &&
-      maxInternalBothHandsGapFrames <=
-        5;
-
-
     if (
-      normalBothHandsReady ||
-      whatPalmFlipReady
+      bothHandsUsableRatio
+      >=
+      qualityPolicy
+        .minimumBothHandsUsableRatio
     ) {
-      activeHand = "both";
+      activeHand =
+        "both";
 
       handRequirementReady =
         true;
@@ -547,17 +496,20 @@ export function calculateDatasetQuality(
 
 
     if (
-      bestRatio >=
+      bestRatio
+      >=
       qualityPolicy
         .minimumSingleHandUsableRatio
     ) {
       activeHand =
-        leftHandUsableRatio >=
+        leftHandUsableRatio
+        >=
         rightHandUsableRatio
           ?
             "left"
           :
             "right";
+
 
       handRequirementReady =
         true;
@@ -566,12 +518,16 @@ export function calculateDatasetQuality(
 
 
   const inputUsable =
-    frameCount >=
+    frameCount
+      >=
       qualityPolicy
-        .minimumRawFrames &&
-    shoulderUsableRatio >=
+        .minimumRawFrames
+    &&
+    shoulderUsableRatio
+      >=
       qualityPolicy
-        .minimumShoulderUsableRatio &&
+        .minimumShoulderUsableRatio
+    &&
     handRequirementReady;
 
 
@@ -579,10 +535,13 @@ export function calculateDatasetQuality(
     inputUsable,
 
     landmarkValidRatio,
+
     shoulderUsableRatio,
 
     leftHandUsableRatio,
+
     rightHandUsableRatio,
+
     bothHandsUsableRatio,
 
     activeHand,

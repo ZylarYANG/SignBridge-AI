@@ -1,0 +1,91 @@
+{
+  "dataset_samples": 210,
+  "excluded_signs": [
+    "CSL_you"
+  ],
+  "active_signs": [
+    "CSL_thanks",
+    "CSL_bye",
+    "CSL_friend",
+    "CSL_hello",
+    "CSL_help",
+    "CSL_like",
+    "CSL_me",
+    "CSL_name",
+    "CSL_never_mind",
+    "CSL_no",
+    "CSL_please",
+    "CSL_sorry",
+    "CSL_what",
+    "CSL_yes"
+  ],
+  "signers": [
+    "S001",
+    "S002",
+    "S003"
+  ],
+  "num_classes": 14,
+  "folds": [
+    {
+      "fold": 1,
+      "train_signer": "S003",
+      "validation_signer": "S001",
+      "test_signer": "S002",
+      "train_samples": 70,
+      "validation_samples": 70,
+      "test_samples": 70,
+      "best_epoch": 8,
+      "best_validation_loss": 1.5270362990243094,
+      "test_loss": 1.9328651751790729,
+      "top1_accuracy": 0.5857142857142857,
+      "top3_accuracy": 0.7,
+      "macro_precision": 0.4475468975468976,
+      "macro_recall": 0.5857142857142856,
+      "macro_f1": 0.4935315035104951
+    },
+    {
+      "fold": 2,
+      "train_signer": "S001",
+      "validation_signer": "S002",
+      "test_signer": "S003",
+      "train_samples": 70,
+      "validation_samples": 70,
+      "test_samples": 70,
+      "best_epoch": 11,
+      "best_validation_loss": 1.6266656875610352,
+      "test_loss": 1.0651895420891897,
+      "top1_accuracy": 0.5714285714285714,
+      "top3_accuracy": 0.8714285714285714,
+      "macro_precision": 0.4825680272108843,
+      "macro_recall": 0.5714285714285714,
+      "macro_f1": 0.5116034758891902
+    },
+    {
+      "fold": 3,
+      "train_signer": "S002",
+      "validation_signer": "S003",
+      "test_signer": "S001",
+      "train_samples": 70,
+      "validation_samples": 70,
+      "test_samples": 70,
+      "best_epoch": 6,
+      "best_validation_loss": 1.6124930347715105,
+      "test_loss": 1.663449583734785,
+      "top1_accuracy": 0.5714285714285714,
+      "top3_accuracy": 0.8,
+      "macro_precision": 0.4525560224089636,
+      "macro_recall": 0.5714285714285714,
+      "macro_f1": 0.4804672451731275
+    }
+  ],
+  "fold_mean_top1": 0.5761904761904761,
+  "fold_std_top1": 0.006734350297014766,
+  "fold_mean_top3": 0.7904761904761904,
+  "fold_std_top3": 0.0703086812392067,
+  "fold_mean_macro_f1": 0.49520074152427096,
+  "fold_std_macro_f1": 0.012765996043159533,
+  "aggregate_accuracy": 0.5761904761904761,
+  "aggregate_macro_precision": 0.5190405872493925,
+  "aggregate_macro_recall": 0.5761904761904761,
+  "aggregate_macro_f1": 0.5302663675064886
+}
