@@ -1,8 +1,12 @@
-from fastapi import APIRouter, HTTPException
+﻿from fastapi import APIRouter, HTTPException
 
 from app.models.practice import (
     PracticeRequest,
     PracticeResponse,
+)
+from app.services.recognition_service import (
+    RecognitionServiceError,
+    get_recognition_service,
 )
 
 
@@ -27,13 +31,17 @@ async def practice(
 
     frames = payload.landmarks
 
-    if payload.sequence_length != EXPECTED_SEQUENCE_LENGTH:
+    if (
+        payload.sequence_length
+        != EXPECTED_SEQUENCE_LENGTH
+    ):
         raise HTTPException(
             status_code=422,
             detail=(
-                f"sequence_length must be "
+                "sequence_length must be "
                 f"{EXPECTED_SEQUENCE_LENGTH}, "
-                f"received {payload.sequence_length}."
+                "received "
+                f"{payload.sequence_length}."
             ),
         )
 
@@ -41,7 +49,8 @@ async def practice(
         raise HTTPException(
             status_code=422,
             detail=(
-                f"Expected {EXPECTED_SEQUENCE_LENGTH} frames, "
+                "Expected "
+                f"{EXPECTED_SEQUENCE_LENGTH} frames, "
                 f"received {len(frames)}."
             ),
         )
@@ -52,13 +61,17 @@ async def practice(
                 status_code=422,
                 detail=(
                     f"Frame {frame_index}: expected "
-                    f"{EXPECTED_LANDMARK_COUNT} landmarks, "
-                    f"received {len(frame)}."
+                    f"{EXPECTED_LANDMARK_COUNT} "
+                    "landmarks, received "
+                    f"{len(frame)}."
                 ),
             )
 
         for point_index, point in enumerate(frame):
-            if len(point) != EXPECTED_COORDINATE_COUNT:
+            if (
+                len(point)
+                != EXPECTED_COORDINATE_COUNT
+            ):
                 raise HTTPException(
                     status_code=422,
                     detail=(
@@ -68,9 +81,27 @@ async def practice(
                     ),
                 )
 
+    try:
+        recognition_service = (
+            get_recognition_service()
+        )
+
+        recognition = (
+            recognition_service.predict(
+                frames,
+                top_k=3,
+            )
+        )
+
+    except RecognitionServiceError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=str(exc),
+        ) from exc
+
     return PracticeResponse(
         status="ok",
-        mode="mock",
+        mode="recognition",
         request_id=payload.request_id,
         target_sign_id=payload.target_sign_id,
         received_shape=(
@@ -78,8 +109,9 @@ async def practice(
             len(frames[0]),
             len(frames[0][0]),
         ),
+        recognition=recognition,
         message=(
-            "SignBridge landmark sequence "
-            "received successfully."
+            "SignBridge recognition completed "
+            "successfully."
         ),
     )

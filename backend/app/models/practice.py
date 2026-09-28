@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+﻿from pydantic import BaseModel, Field
 
 
 class PracticeRequest(BaseModel):
@@ -13,6 +13,29 @@ class PracticeRequest(BaseModel):
     landmarks: list[list[list[float]]]
 
 
+class RecognitionCandidate(BaseModel):
+    model_class_id: int
+    original_class_id: int
+
+    sign_id: str
+    label: str
+
+    confidence: float = Field(
+        ge=0.0,
+        le=1.0,
+    )
+
+
+class RecognitionResult(BaseModel):
+    prediction: RecognitionCandidate
+    top3: list[RecognitionCandidate]
+
+    checkpoint_name: str
+    device: str
+
+    dataset_snapshot_sha256: str
+
+
 class PracticeResponse(BaseModel):
     status: str
     mode: str
@@ -21,5 +44,7 @@ class PracticeResponse(BaseModel):
     target_sign_id: str
 
     received_shape: tuple[int, int, int]
+
+    recognition: RecognitionResult
 
     message: str
