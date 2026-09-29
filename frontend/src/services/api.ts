@@ -1,4 +1,4 @@
-﻿export type PracticeRequest = {
+export type PracticeRequest = {
   request_id: string;
   target_sign_id: string;
   raw_frame_count: number;
@@ -30,6 +30,31 @@ export type RecognitionResult = {
 };
 
 
+export type AssessmentScore = {
+  score: number;
+};
+
+
+export type AssessmentEvaluation = {
+  overall: number;
+
+  handshape: AssessmentScore;
+  trajectory: AssessmentScore;
+  position: AssessmentScore;
+};
+
+
+export type AssessmentError = {
+  code: string;
+  severity: number;
+};
+
+
+export type AssessmentQuality = {
+  input_usable: boolean;
+};
+
+
 export type PracticeResponse = {
   status: string;
   mode: string;
@@ -45,8 +70,17 @@ export type PracticeResponse = {
 
   recognition: RecognitionResult;
 
+  recognition_matches_target: boolean;
+
+  evaluation: AssessmentEvaluation;
+
+  errors: AssessmentError[];
+
+  quality: AssessmentQuality;
+
   message: string;
 };
+
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ??
@@ -463,4 +497,3 @@ export async function saveCollectorProfile(
 
   return response.json();
 }
-

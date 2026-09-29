@@ -1,4 +1,4 @@
-﻿import { WorkbenchStatusPanel } from "./WorkbenchStatusPanel";
+import { WorkbenchStatusPanel } from "./WorkbenchStatusPanel";
 
 import {
   useEffect,
@@ -3201,7 +3201,7 @@ export function CameraView() {
       {practiceResult && (
         <div className="api-result">
           <strong>
-            AI 手语识别结果
+            AI 手语练习结果
           </strong>
 
           <p>
@@ -3224,7 +3224,7 @@ export function CameraView() {
           </p>
 
           <p>
-            置信度：
+            识别置信度：
             <strong>
               {
                 (
@@ -3240,26 +3240,155 @@ export function CameraView() {
           </p>
 
           <p>
-            判断：
+            识别判断：
             <strong>
               {
                 practiceResult
-                  .recognition
-                  .prediction
-                  .sign_id ===
-                selectedSign.signId
-                  ?
-                    "识别一致 ✓"
-                  :
-                    "识别不一致"
+                  .recognition_matches_target
+                  ? "目标一致 ✓"
+                  : "与目标不一致"
               }
             </strong>
           </p>
 
-          <div>
-            <strong>
-              Top 3
-            </strong>
+          {
+            practiceResult
+              .recognition_matches_target
+              ? (
+                <>
+                  <hr />
+
+                  <strong>
+                    动作评分
+                  </strong>
+
+                  <p>
+                    综合：
+                    <strong>
+                      {
+                        practiceResult
+                          .evaluation
+                          .overall
+                          .toFixed(1)
+                      }
+                    </strong>
+                  </p>
+
+                  <p>
+                    手型：
+                    <strong>
+                      {
+                        practiceResult
+                          .evaluation
+                          .handshape
+                          .score
+                          .toFixed(1)
+                      }
+                    </strong>
+                  </p>
+
+                  <p>
+                    轨迹：
+                    <strong>
+                      {
+                        practiceResult
+                          .evaluation
+                          .trajectory
+                          .score
+                          .toFixed(1)
+                      }
+                    </strong>
+                  </p>
+
+                  <p>
+                    位置：
+                    <strong>
+                      {
+                        practiceResult
+                          .evaluation
+                          .position
+                          .score
+                          .toFixed(1)
+                      }
+                    </strong>
+                  </p>
+
+                  {
+                    practiceResult
+                      .errors
+                      .length === 0
+                      ? (
+                        <p>
+                          <strong>
+                            暂未检测到明显动作偏差 ✓
+                          </strong>
+                        </p>
+                      )
+                      : (
+                        <div>
+                          <strong>
+                            检测到的改进项
+                          </strong>
+
+                          <ul>
+                            {
+                              practiceResult
+                                .errors
+                                .map(
+                                  (
+                                    error,
+                                    index
+                                  ) => (
+                                    <li
+                                      key={
+                                        `${error.code}-${index}`
+                                      }
+                                    >
+                                      {
+                                        error.code
+                                      }
+                                      {" · "}
+                                      严重度
+                                      {" "}
+                                      {
+                                        (
+                                          error
+                                            .severity *
+                                          100
+                                        ).toFixed(0)
+                                      }
+                                      %
+                                    </li>
+                                  )
+                                )
+                            }
+                          </ul>
+                        </div>
+                      )
+                  }
+                </>
+              )
+              : (
+                <>
+                  <hr />
+
+                  <p>
+                    <strong>
+                      当前动作与目标词识别结果不一致。
+                    </strong>
+                  </p>
+
+                  <p>
+                    请重新完成目标动作后再进行细节评分。
+                  </p>
+                </>
+              )
+          }
+
+          <details>
+            <summary>
+              Top 3 识别候选
+            </summary>
 
             <ol>
               {
@@ -3291,7 +3420,7 @@ export function CameraView() {
                   )
               }
             </ol>
-          </div>
+          </details>
         </div>
       )}
 
@@ -3525,5 +3654,3 @@ export function CameraView() {
     </section>
   );
 }
-
-
