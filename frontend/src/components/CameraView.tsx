@@ -1,4 +1,4 @@
-import { WorkbenchStatusPanel } from "./WorkbenchStatusPanel";
+﻿import { WorkbenchStatusPanel } from "./WorkbenchStatusPanel";
 
 import {
   useEffect,
@@ -992,7 +992,7 @@ export function CameraView() {
 
     if (!next) {
       setNoticeMessage(
-        "当前采集者 15 个词均已达到目标。"
+        "当前采集者全部词汇均已达到目标。"
       );
 
       return;
@@ -3201,15 +3201,97 @@ export function CameraView() {
       {practiceResult && (
         <div className="api-result">
           <strong>
-            FastAPI 练习接口成功
+            AI 手语识别结果
           </strong>
 
           <p>
-            Status：
-            {
-              practiceResult.status
-            }
+            目标动作：
+            <strong>
+              {selectedSign.label}
+            </strong>
           </p>
+
+          <p>
+            识别结果：
+            <strong>
+              {
+                practiceResult
+                  .recognition
+                  .prediction
+                  .label
+              }
+            </strong>
+          </p>
+
+          <p>
+            置信度：
+            <strong>
+              {
+                (
+                  practiceResult
+                    .recognition
+                    .prediction
+                    .confidence *
+                  100
+                ).toFixed(1)
+              }
+              %
+            </strong>
+          </p>
+
+          <p>
+            判断：
+            <strong>
+              {
+                practiceResult
+                  .recognition
+                  .prediction
+                  .sign_id ===
+                selectedSign.signId
+                  ?
+                    "识别一致 ✓"
+                  :
+                    "识别不一致"
+              }
+            </strong>
+          </p>
+
+          <div>
+            <strong>
+              Top 3
+            </strong>
+
+            <ol>
+              {
+                practiceResult
+                  .recognition
+                  .top3
+                  .map(
+                    (candidate) => (
+                      <li
+                        key={
+                          candidate
+                            .model_class_id
+                        }
+                      >
+                        {
+                          candidate.label
+                        }
+                        {" · "}
+                        {
+                          (
+                            candidate
+                              .confidence *
+                            100
+                          ).toFixed(1)
+                        }
+                        %
+                      </li>
+                    )
+                  )
+              }
+            </ol>
+          </div>
         </div>
       )}
 
@@ -3443,4 +3525,5 @@ export function CameraView() {
     </section>
   );
 }
+
 

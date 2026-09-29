@@ -1,4 +1,4 @@
-export type PracticeRequest = {
+﻿export type PracticeRequest = {
   request_id: string;
   target_sign_id: string;
   raw_frame_count: number;
@@ -7,9 +7,33 @@ export type PracticeRequest = {
 };
 
 
+export type RecognitionCandidate = {
+  model_class_id: number;
+  original_class_id: number;
+
+  sign_id: string;
+  label: string;
+
+  confidence: number;
+};
+
+
+export type RecognitionResult = {
+  prediction: RecognitionCandidate;
+
+  top3: RecognitionCandidate[];
+
+  checkpoint_name: string;
+  device: string;
+
+  dataset_snapshot_sha256: string;
+};
+
+
 export type PracticeResponse = {
   status: string;
   mode: string;
+
   request_id: string;
   target_sign_id: string;
 
@@ -19,9 +43,10 @@ export type PracticeResponse = {
     number
   ];
 
+  recognition: RecognitionResult;
+
   message: string;
 };
-
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ??
@@ -438,3 +463,4 @@ export async function saveCollectorProfile(
 
   return response.json();
 }
+
