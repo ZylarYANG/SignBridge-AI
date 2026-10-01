@@ -14,8 +14,13 @@
   "type": "module",
   "dependencies": {
     "@mediapipe/tasks-vision": "^1.0.1",
+    "framer-motion": "13.3.0",
+    "motion": "13.3.0",
+    "motion-dom": "13.3.0",
+    "motion-utils": "13.3.0",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
     "@types/react": "^19.3.0",

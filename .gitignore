@@ -62,3 +62,9 @@ data/processed/*
 /training/cross_validation_exclude_*/
 /training/evaluation/
 /training/quick_validation_s004/
+
+# Local frontend build / design artifacts
+signbridge_learning_ui_v6_pixelquest.zip
+frontend/src/styles/*.bak
+frontend/src/styles/*local-backup
+frontend/*.tsbuildinfo

@@ -1,29 +1,99 @@
-import { CameraView } from "./components/CameraView";
+import {
+  MotionConfig,
+} from "motion/react";
 
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+} from "react-router-dom";
 
+import {
+  LearningShell,
+} from "./components/learning/LearningShell";
+
+import {
+  LearnHome,
+} from "./pages/learn/LearnHome";
+
+import {
+  SignLesson,
+} from "./pages/learn/SignLesson";
+
+import {
+  PracticeStage,
+} from "./pages/learn/PracticeStage";
+
+import {
+  LabWorkbench,
+} from "./pages/lab/LabWorkbench";
+
+import "./styles/learning-v6.css";
 
 function App() {
   return (
-    <main className="app-shell">
-      <header className="app-header">
-        <div>
-          <span className="eyebrow">
-            AI Chinese Sign Language Tutor
-          </span>
+    <BrowserRouter>
+      <MotionConfig
+        reducedMotion="user"
+      >
+        <Routes>
+          <Route
+            element={
+              <LearningShell />
+            }
+          >
+            <Route
+              path="/"
+              element={
+                <Navigate
+                  to="/learn"
+                  replace
+                />
+              }
+            />
 
-          <h1>SignBridge AI · 语桥智教</h1>
+            <Route
+              path="/learn"
+              element={
+                <LearnHome />
+              }
+            />
 
-          <p>
-            Day 1 · Camera → MediaPipe → Landmark
-          </p>
-        </div>
-      </header>
+            <Route
+              path="/learn/:signId"
+              element={
+                <SignLesson />
+              }
+            />
 
-      <section className="workspace">
-        <CameraView />
+            <Route
+              path="/practice/:signId"
+              element={
+                <PracticeStage />
+              }
+            />
 
-      </section>
-    </main>
+            <Route
+              path="/lab"
+              element={
+                <LabWorkbench />
+              }
+            />
+
+            <Route
+              path="*"
+              element={
+                <Navigate
+                  to="/learn"
+                  replace
+                />
+              }
+            />
+          </Route>
+        </Routes>
+      </MotionConfig>
+    </BrowserRouter>
   );
 }
 
